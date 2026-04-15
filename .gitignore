@@ -1,0 +1,24 @@
+# Directories
+cache/
+out/
+target/
+deps/
+dependencies/
+docs/
+node_modules/
+.vscode/*
+.idea/
+
+
+# broadcasts
+!broadcast
+contracts/broadcast/*
+contracts/broadcast/*/31337/
+
+# Files
+*.env
+.DS_Store
+.history
+*.nockma
+*.bkp
+*.zip
