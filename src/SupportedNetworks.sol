@@ -111,6 +111,7 @@ contract SupportedNetworks {
     /// @return data The router data of the current network.
     function getRouterData() public view returns (Data memory data) {
         data = _riscZeroVerifierRouters[_supportedNetworks[block.chainid]];
+        require(address(data.router) != address(0), UnsupportedNetwork({chainId: block.chainid}));
     }
 
     // solhint-enable comprehensive-interface
