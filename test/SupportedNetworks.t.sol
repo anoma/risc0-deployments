@@ -25,6 +25,7 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         getRouterData().router.getVerifier({selector: RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR});
     }
 
+    // forge-lint: disable-next-line(mixed-case-function)
     function tableNetworksTest_SupportedNetworks_the_groth16_verifier_is_not_stopped(TestCase memory network) public {
         uint256 chainId = vm.createFork(network.name);
         vm.selectFork(chainId);
