@@ -1,0 +1,58 @@
+# Full reference https://github.com/foundry-rs/foundry/tree/master/crates/config
+[profile.default]
+solc = "0.8.34"
+auto_detect_solc = false
+evm_version = "osaka"
+optimizer = true
+via_ir = true
+optimizer_runs = 10000
+allow_internal_expect_revert = true
+
+src = "src"
+test = "test"
+out = "out"
+script = "script"
+fs_permissions = [{ access = "read", path = "./" }]
+libs = ["dependencies"]
+auto_detect_remappings = false
+remappings = [
+    "forge-std-1.15.0/=dependencies/forge-std-1.15.0/",
+    "openzeppelin/contracts/=dependencies/risc0-risc0-ethereum-3.0.1/lib/openzeppelin-contracts/contracts/",
+    "risc0-risc0-ethereum-3.0.1/=dependencies/risc0-risc0-ethereum-3.0.1/",
+]
+ignored_warnings_from = [
+    "dependencies/risc0-risc0-ethereum-3.0.1/contracts/src", # Warning 9170: Comparison of variables of contract type is deprecated
+]
+
+[dependencies]
+"forge-std" = "1.15.0"
+"risc0-risc0-ethereum" = "3.0.1"
+
+[soldeer]
+recursive_deps = true
+remappings_location = "config"
+remappings_generate = true
+remappings_version = true
+
+[fuzz]
+runs = 1_000
+
+[profile.ci]
+fuzz = { runs = 1_000 }
+verbosity = 3
+
+[rpc_endpoints]
+mainnet = "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+sepolia = "https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+arbitrum = "https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+arbitrum-sepolia = "https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+base = "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+base-sepolia = "https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+optimism = "https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+optimism-sepolia = "https://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+bsc = "https://bnb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+bsc-testnet = "https://bnb-testnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+tempo = "https://tempo-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+tempo-moderato = "https://tempo-moderato.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+
+localhost = "http://localhost:8545"
