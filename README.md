@@ -1,6 +1,8 @@
+[![Contracts Tests](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml/badge.svg)](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml) [![soldeer.xyz](https://img.shields.io/badge/soldeer.xyz-anoma--risc0--deployments-blue?logo=ethereum)](https://soldeer.xyz/project/anoma-risc0-deployments) [![License](https://img.shields.io/badge/license-MIT-blue)](https://raw.githubusercontent.com/anoma/risc0-deployments/refs/heads/main/bindings/LICENSE)
+
 # RISC0 Deployments
 
-The protocol adapter contract written in Solidity enabling Anoma Resource Machine transaction settlement on EVM-compatible chains.
+This repo makes the RISC Zero deployments available as a package.
 
 ## Prerequisites
 
@@ -34,7 +36,7 @@ The protocol adapter contract written in Solidity enabling Anoma Resource Machin
 
 #### Installation
 
-Change the directory to the `contracts` folder with `cd contracts` and run
+To install the dependencies, run
 
 ```sh
 forge soldeer install
@@ -88,44 +90,4 @@ Run
 
 ```sh
 forge doc
-```
-
-#### Deployment
-
-To simulate deployment on sepolia, run
-
-```sh
-forge script script/DeployProtocolAdapter.s.sol:DeployProtocolAdapter \
-  --sig "run(bool,address)" <IS_TEST_DEPLOYMENT> <EMERGENCY_STOP_CALLER> \
-  --rpc-url sepolia
-```
-
-Append the
-
-- `--broadcast` flag to deploy on sepolia
-- `--verify` flag for subsequent contract verification (Sourcify by default; set `ETHERSCAN_API_KEY` to also verify on Etherscan)
-- `--slow` flag to add 15 seconds of waiting time between verification attempts
-- `--account <ACCOUNT_NAME>` flag to use a previously imported keystore (see
-  `cast wallet --help` for more info)
-
-#### Block Explorer Verification
-
-For post-deployment verification on **Sourcify** run
-
-```sh
-forge verify-contract \
-   <ADDRESS> \
-   src/ProtocolAdapter.sol:ProtocolAdapter \
-   --chain sepolia \
-   --verifier sourcify
-```
-
-For **Etherscan** (requires `ETHERSCAN_API_KEY`) run
-
-```sh
-forge verify-contract \
-   <ADDRESS> \
-   src/ProtocolAdapter.sol:ProtocolAdapter \
-   --chain sepolia \
-   --verifier etherscan
 ```

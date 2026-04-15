@@ -2,26 +2,15 @@
 
 Releases of the packages contained in this monorepo follow the [SemVer convention](https://semver.org/spec/v2.0.0.html).
 
-> ![NOTE]
-> The `contracts` and `bindings` are independently versioned with `X.Y.Z` and `A.B.C`, respectively.
-> Both versions can include release candidates (suffixed with `-rc.?`).
-
 We distinguish between three release cases:
 
-- Deploying a **new** protocol adapter version to multiple new chains resulting in a new
+- Adding RISC Zero contract deployments of a **new** RISC Zero protocol version resulting in a new `vX.0.0` version.
 
-  - `contracts/vX.Y.Z` version
-  - `bindings/vA.0.0` version
+- Adding new RISC Zero contract deployments of the **current** RISC Zero protocol version resulting in a new `vX.Y.0` version.
 
-- Deploying an **existing** protocol adapter version to multiple new chains resulting in a new
+- Correcting an existing RISC Zero contract of the **current** RISC Zero protocol version resulting in a new `vX.Y.Z` version.
 
-  - `bindings/vA.B.0` version
-
-- Maintaining the bindings resulting in a new
-
-  - `bindings/vA.B.C` version
-
-## Deploying a new Protocol Adapter Version
+## Deploying RISC Zero contracts
 
 ### 1. Prerequisites
 
@@ -47,16 +36,16 @@ We distinguish between three release cases:
   cast wallet import deployer --mnemonic <MNEMONICC>
   ```
 
-- [ ] Set `IS_TEST_DEPLOYMENT` to `false` to deterministically deploy the protocol adapter.
+- [ ] Check that the RISC Zero verifier router admin address is set up correctly and export it with
 
   ```sh
-  export IS_TEST_DEPLOYMENT=false
+  export ADMIN=<ADDRESS>
   ```
 
-- [ ] Check that the emergency caller address is set up correctly and export it with
+- [ ] Check that the RISC Zero emergency stop guardian address is set up correctly and export it with
 
   ```sh
-  export EMERGENCY_STOP_CALLER=<ADDRESS>
+  export GUARDIAN=<ADDRESS>
   ```
 
 - [ ] Set the Alchemy RPC provider by exporting
@@ -71,274 +60,77 @@ We distinguish between three release cases:
   export ETHERSCAN_API_KEY=<KEY>
   ```
 
-### 2. Bump the Version
-
-- [ ] Bump the `_PROTOCOL_ADAPTER_VERSION` constant in [`./contracts/src/libs/Versioning.sol`](./contracts/src/libs/Versioning.sol) to the new version number following [SemVer](https://semver.org/spec/v2.0.0.html).
-
-- [ ] Remove all chain name and address pairs in the
-
-  ```rust
-  pub fn protocol_adapter_deployments_map() -> HashMap<NamedChain, Address>
-  ```
-
-  function in [`./bindings/src/addresses.rs`](./bindings/src/addresses.rs).
-
-### 3. Build the Contracts
+### 2. Build the Contracts
 
 - [ ] Run `just contracts-build`
 
 - [ ] Run the test suite with `just contracts-test`
 
-### 4. Deploy and Verify the Protocol Adapter
+### 3. Deploy and Verify the RISC Zero Contracts
 
 For each chain, you want to deploy to, do the following:
 
 - [ ] **Simulate** the deployment by running
 
   ```sh
-  just contracts-simulate <CHAIN_NAME>
+  just contracts-simulate $ADMIN $GUARDIAN <CHAIN_NAME>
   ```
 
 - [ ] After successful simulation, **deploy** the contract by running
 
   ```sh
-  just contracts-deploy deployer <CHAIN_NAME>
+  just contracts-deploy deployer $ADMIN $GUARDIAN <CHAIN_NAME>
   ```
 
-- [ ] Export the address of the newly deployed protocol adapter contract with
+- [ ] Export the addresses of the newly deployed RISC Zero contract
 
   ```sh
-  export PA_ADDRESS=<ADDRESS>
+  export GROTH16=<GROTH16_VERIFIER_CONTRACT_ADDRESS>
+  export ESTOP=<EMERGENCY_STOP_CONTRACT_ADDRESS>
+  export ROUTER=<ROUTER_CONTRACT_ADDRESS>
   ```
 
 - [ ] Verify the contract on
-
   - [ ] sourcify
 
     ```sh
-    just contracts-verify-sourcify <PA_ADDRESS> <CHAIN>
+    just contracts-verify-sourcify $GROTH16 $ESTOP $ROUTER <CHAIN>
     ```
 
   - [ ] Etherscan
 
     ```sh
-    just contracts-verify-etherscan <PA_ADDRESS> <CHAIN>
+    just contracts-verify-etherscan $GROTH16 $ESTOP $ROUTER <CHAIN>
     ```
 
-  and check that the verification worked (e.g., on https://sourcify.dev/#/lookup).
+  - [ ] custom explorers
 
-### 5. Update the Deployments Map and Create a new `contracts` and `bindings` GitHub Release
+    ```sh
+        just contracts-verify-custom $GROTH16 $ESTOP $ROUTER <VERIFIER_URL> <CHAIN>
+    ```
 
-- [ ] Add the **new** address and chain name pairs in the
+    and check that the verification worked (e.g., on https://sourcify.dev/#/lookup).
 
-  ```rust
-  pub fn protocol_adapter_deployments_map() -> HashMap<NamedChain, Address>
-  ```
+### 4. Ensure the Admin has Accepted the Ownership Transfer
 
-  function in [`./bindings/src/addresses.rs`](./bindings/src/addresses.rs).
+- [ ] Accept the ownership of the RISC Zero verifier router as the `$ADMIN`
 
-- [ ] Change the `bindings` package version number in the [`./bindings/Cargo.toml`](./bindings/Cargo.toml) file to `A.0.0`, where `A` is the last `MAJOR` version number incremented by 1.
+- [ ] Check afterwards the admin has been updated correctly in the RISC Zero verifier router contract.
 
-- [ ] Clean the bindings build with `just bindings-clean`.
+### 5. Update the supported networks and create a GitHub Release
 
-- [ ] Regenerate the bindings with `just contracts-gen-bindings`.
+- [ ] Update [`./src/SupportedNetworks.sol`](./src/SupportedNetworks.sol).
 
-- [ ] Run `just bindings-build` and check that the `Cargo.lock` file reflects the version number change.
+- [ ] Merge a PR containing the work into main.
 
-- [ ] Run the tests with `just bindings-test`.
+- [ ] Create new [GH release](https://github.com/anoma/pa-evm/releases).
 
-- [ ] After merging, create new tags for:
+### 6. Publish a new Soldeer package
 
-  - [ ] `contracts/vX.Y.Z` where `X.Y.Z` must match the protocol adapter version number and
-  - [ ] `bindings/vA.0.0` tag, where `A` is the last `MAJOR` version incremented by 1.
-
-- [ ] Create new [GH releases](https://github.com/anoma/pa-evm/releases) for both packages.
-
-### 6. Publish a new `contracts` package
-
-- [ ] Publish the `contracts` package on https://soldeer.xyz/ with
+- [ ] Publish the `anoma-risc0-deployments` package on https://soldeer.xyz/ with
 
   ```sh
   just contracts-publish <X.Y.Z> --dry-run
   ```
 
-  where `<X.Y.Z>` is the `_PROTOCOL_ADAPTER_VERSION` number and check the resulting `contracts.zip` file. If everything is correct, remove the `--dry-run` flag and publish the package.
-
-### 7. Publish a new `bindings` package
-
-- [ ] Publish the `anoma-pa-evm-bindings` package on https://crates.io/ with
-
-  ```sh
-  just bindings-publish --dry-run
-  ```
-
-  and check the result. If everything is correct, remove the `--dry-run` flag and publish the package.
-
-## Deploying an existing Protocol Adapter Version to new Chains
-
-### 1. Prerequisites
-
-- [ ] Visit https://www.soliditylang.org/ and check that Solidity compiler version used in `contracts/foundry.toml` has no known vulnerabilities.
-
-- [ ] Install the dependencies with
-
-  ```sh
-  just contracts-deps
-  ```
-
-- [ ] Check that the dependencies are up-to-date and have no known vulnerabilities in the dependencies
-
-- [ ] Check that the bindings are up-to-date with
-
-  ```sh
-  just bindings-check
-  ```
-
-- [ ] Checkout a new git branch branching off from `main`.
-
-- [ ] Check that there are no staged or unstaged changes by running `git status`.
-
-- [ ] Check that the deployer wallet is funded and add it to `cast` with
-
-  ```sh
-  cast wallet import deployer --private-key <PRIVATE_KEY>
-  ```
-
-  or
-
-  ```sh
-  cast wallet import deployer --mnemonic <MNEMONICC>
-  ```
-
-- [ ] Set `IS_TEST_DEPLOYMENT` to `false` to deterministically deploy the protocol adapter.
-
-  ```sh
-  export IS_TEST_DEPLOYMENT=false
-  ```
-
-- [ ] Check that the emergency caller address is set up correctly and export it with
-
-  ```sh
-  export EMERGENCY_STOP_CALLER=<ADDRESS>
-  ```
-
-- [ ] Set the Alchemy RPC provider by exporting
-
-  ```sh
-  export ALCHEMY_API_KEY=<KEY>
-  ```
-
-- [ ] Set the Etherscan key
-  ```sh
-  export ETHERSCAN_API_KEY=<KEY>
-  ```
-
-### 2. Build the contracts
-
-- [ ] Run `just contracts-build`
-
-- [ ] Run the test suite with `just contracts-test`
-
-### 3. Deploy and Verify the Protocol Adapter
-
-For each **new** chain, you want to deploy to, do the following:
-
-- [ ] **Simulate** the deployment by running
-
-  ```sh
-  just contracts-simulate <CHAIN_NAME>
-  ```
-
-- [ ] After successful simulation, **deploy** the contract by running
-
-  ```sh
-  just contracts-deploy deployer <CHAIN_NAME>
-  ```
-
-- [ ] Export the address of the newly deployed protocol adapter contract with
-
-  ```sh
-  export PA_ADDRESS=<ADDRESS>
-  ```
-
-- [ ] Verify the contract on
-
-  - [ ] sourcify
-
-    ```sh
-    just contracts-verify-sourcify <PA_ADDRESS> <CHAIN>
-    ```
-
-  - [ ] Etherscan
-
-    ```sh
-    just contracts-verify-etherscan <PA_ADDRESS> <CHAIN>
-    ```
-
-  and check that the verification worked (e.g., on https://sourcify.dev/#/lookup).
-
-### 4. Update the Deployments Map and Create a new `bindings` GitHub Release
-
-- [ ] Add the **new** address and chain name pairs in the
-
-  ```rust
-  pub fn protocol_adapter_deployments_map() -> HashMap<NamedChain, Address>
-  ```
-
-  function in `./bindings/src/addresses.rs`.
-
-- [ ] Change the `bindings` package version number in the `./bindings/Cargo.toml` file to `A.B.0`, where `A` is the last `MAJOR` version and `B` is the last `MINOR` version number incremented by 1.
-
-- [ ] Run `just bindings-build` and check that the `Cargo.lock` file reflects the version number change.
-
-- [ ] Run the tests with `just bindings-test`.
-
-- [ ] After merging, create a new `bindings/vA.B.0` tag, where `A` is the last `MAJOR` version and `B` is the last `MINOR` version number incremented by 1.
-
-- [ ] Create a new [GH release](https://github.com/anoma/pa-evm/releases).
-
-### 5. Publish a new `bindings` package
-
-- [ ] Publish the `anoma-pa-evm-bindings` package on https://crates.io/ with
-
-  ```sh
-  just bindings-publish --dry-run
-  ```
-
-  and check the result. If everything is correct, remove the `--dry-run` flag and publish the package.
-
-## Maintaining the Bindings
-
-### 1. Prerequisites
-
-- [ ] Check that the bindings are up-to-date with
-
-  ```sh
-  just bindings-check
-  ```
-
-- [ ] Checkout a new git branch branching off from `main`.
-
-- [ ] Check that there are no staged or unstaged changes by running `git status`.
-
-### 2. Create a new `bindings` GitHub Release
-
-- [ ] Change the `bindings` package version number in the `./bindings/Cargo.toml` file to `A.B.C`, where `A` and `B` are the last `MAJOR` and `MINOR` version numbers and `C` is the last `PATCH` version number incremented by 1.
-
-- [ ] Run `just bindings-build` and check that the `Cargo.lock` file reflects the version number change.
-
-- [ ] Run the tests with `just bindings-test`.
-
-- [ ] After merging, create a new `bindings/vA.B.C` tag, where `A` and `B` are the last `MAJOR` and `MINOR` version numbers, respectively, and `C` is the last `PATCH` version number incremented by 1.
-
-- [ ] Create a new [GH release](https://github.com/anoma/pa-evm/releases).
-
-### 3. Publish a new `bindings` package
-
-- [ ] Publish the `anoma-pa-evm-bindings` package on https://crates.io/ with
-
-  ```sh
-  just bindings-publish --dry-run
-  ```
-
-  and check the result. If everything is correct, remove the `--dry-run` flag and publish the package.
+  where `<X.Y.Z>` is the `_PROTOCOL_ADAPTER_VERSION` number and check the resulting `.zip` file. If everything is correct, remove the `--dry-run` flag and publish the package.
