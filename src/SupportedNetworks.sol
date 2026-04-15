@@ -94,13 +94,13 @@ contract SupportedNetworks {
         _supportNetwork({
             name: "tempo-moderato",
             chainId: 42431,
-            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            riscZeroVerifierRouter: 0xCaE654028902b31B18e23D21407E17A3E2fd930c,
             isAnomaDeployed: true
         });
         _supportNetwork({
             name: "tempo",
             chainId: 4217,
-            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            riscZeroVerifierRouter: 0xCaE654028902b31B18e23D21407E17A3E2fd930c,
             isAnomaDeployed: true
         });
     }
