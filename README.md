@@ -1,8 +1,8 @@
-[![Contracts Tests](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml/badge.svg)](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml) [![soldeer.xyz](https://img.shields.io/badge/soldeer.xyz-anoma--risc0--deployments-blue?logo=ethereum)](https://soldeer.xyz/project/anoma-risc0-deployments) [![License](https://img.shields.io/badge/license-MIT-blue)](https://raw.githubusercontent.com/anoma/risc0-deployments/refs/heads/main/bindings/LICENSE)
+[![Contracts Tests](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml/badge.svg)](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml) [![soldeer.xyz](https://img.shields.io/badge/soldeer.xyz-anoma--risc0--deployments-blue?logo=ethereum)](https://soldeer.xyz/project/anoma-risc0-deployments) [![License](https://img.shields.io/badge/license-MIT-blue)](https://raw.githubusercontent.com/anoma/risc0-deployments/refs/heads/main/LICENSE)
 
 # RISC0 Deployments
 
-This repo makes the RISC Zero deployments available as a package.
+This repo makes the RISC Zero deployments available in a soldeer package.
 
 ## Prerequisites
 
