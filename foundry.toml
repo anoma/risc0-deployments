@@ -1,6 +1,6 @@
 # Full reference https://github.com/foundry-rs/foundry/tree/master/crates/config
 [profile.default]
-solc = "0.8.34"
+solc = "0.8.35"
 auto_detect_solc = false
 evm_version = "osaka"
 optimizer = true
@@ -16,7 +16,7 @@ fs_permissions = [{ access = "read", path = "./" }]
 libs = ["dependencies"]
 auto_detect_remappings = false
 remappings = [
-    "forge-std-1.15.0/=dependencies/forge-std-1.15.0/",
+    "forge-std-1.16.1/=dependencies/forge-std-1.16.1/",
     "openzeppelin/contracts/=dependencies/risc0-risc0-ethereum-3.0.1/lib/openzeppelin-contracts/contracts/",
     "risc0-risc0-ethereum-3.0.1/=dependencies/risc0-risc0-ethereum-3.0.1/",
 ]
@@ -25,7 +25,7 @@ ignored_warnings_from = [
 ]
 
 [dependencies]
-"forge-std" = "1.15.0"
+"forge-std" = "1.16.1"
 "risc0-risc0-ethereum" = "3.0.1"
 
 [soldeer]
