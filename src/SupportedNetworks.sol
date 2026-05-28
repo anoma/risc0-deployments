@@ -103,6 +103,20 @@ contract SupportedNetworks {
             riscZeroVerifierRouter: 0xCaE654028902b31B18e23D21407E17A3E2fd930c,
             isAnomaDeployed: true
         });
+
+        _supportNetwork({
+            name: "monad-testnet",
+            chainId: 10143,
+            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            isAnomaDeployed: true
+        });
+
+        _supportNetwork({
+            name: "monad",
+            chainId: 143,
+            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            isAnomaDeployed: true
+        });
     }
 
     // solhint-disable comprehensive-interface
