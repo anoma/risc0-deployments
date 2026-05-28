@@ -64,6 +64,7 @@ contracts-deploy deployer admin guardian chain *args:
 
 # Verify RISC Zero contracts on Sourcify
 contracts-verify-sourcify groth16 estop router chain *args:
+    env -u ETHERSCAN_API_KEY \
     forge verify-contract {{groth16}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier sourcify --watch {{ args }}
