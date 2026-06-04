@@ -1,93 +1,33 @@
 [![Contracts Tests](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml/badge.svg)](https://github.com/anoma/risc0-deployments/actions/workflows/contracts.yml) [![soldeer.xyz](https://img.shields.io/badge/soldeer.xyz-anoma--risc0--deployments-blue?logo=ethereum)](https://soldeer.xyz/project/anoma-risc0-deployments) [![License](https://img.shields.io/badge/license-MIT-blue)](https://raw.githubusercontent.com/anoma/risc0-deployments/refs/heads/main/LICENSE)
 
+[![Bindings Tests](https://github.com/anoma/risc0-deployments/actions/workflows/bindings.yml/badge.svg)](https://github.com/anoma/risc0-deployments/actions/workflows/bindings.yml) [![crates.io](https://img.shields.io/badge/crates.io-anoma--risc0--deployments--bindings-blue?logo=rust)](https://crates.io/crates/anoma-risc0-deployments-bindings) [![License](https://img.shields.io/badge/license-MIT-blue)](https://raw.githubusercontent.com/anoma/risc0-deployments/refs/heads/main/LICENSE)
+
 # RISC0 Deployments
 
-This repo makes the RISC Zero deployments available in a soldeer package.
+This repo makes the [RISC Zero](https://risczero.com/) verifier deployments available as a [soldeer](https://soldeer.xyz/) package and as Rust bindings, for use with the [Anoma EVM protocol adapter](https://github.com/anoma/pa-evm).
 
-## Prerequisites
+## Project Structure
 
-1. Get an up-to-date version of [Foundry](https://github.com/foundry-rs/foundry) with
+This monorepo is structured as follows:
 
-   ```sh
-   curl -L https://foundry.paradigm.xyz | sh
-   foundryup
-   ```
-
-2. Optionally, to lint the contracts, install [solhint](https://github.com/protofire/solhint) using a JS package manager such as [Bun](https://bun.com/) with
-
-   ```sh
-   curl -fsSL https://bun.sh/install | sh
-   bun install
-   ```
-
-3. Optionally, for static analysis, install [Slither](https://github.com/crytic/slither) with
-
-   ```sh
-   python3 -m pip install slither-analyzer
-   ```
-
-   or brew
-
-   ```sh
-   brew install slither-analyzer
-   ```
-
-## Usage
-
-#### Installation
-
-To install the dependencies, run
-
-```sh
-forge soldeer install
+```
+.
+├── bindings
+├── contracts
+├── justfile
+├── README.md
+└── RELEASE_CHECKLIST.md
 ```
 
-#### Build
+The [contracts](./contracts/) folder contains the deploy scripts and supporting [Solidity](https://soliditylang.org/) sources as well as the [Foundry forge](https://book.getfoundry.sh/forge/) tests. The RISC Zero verifier, mock verifier, router, and emergency-stop contracts come from the [`risc0-ethereum`](https://github.com/risc0/risc0-ethereum) soldeer dependency. This folder is published as the `anoma-risc0-deployments` soldeer package; see its [README](./contracts/README.md) for the low-level `forge` commands.
 
-To compile the contracts, run
+The [bindings](./bindings/) folder provides [Rust](https://www.rust-lang.org/) bindings for the RISC Zero verifier contracts (`RiscZeroGroth16Verifier`, `RiscZeroMockVerifier`, `RiscZeroVerifierEmergencyStop`, and `RiscZeroVerifierRouter`) using the [alloy-rs](https://github.com/alloy-rs) library, published as the `anoma-risc0-deployments-bindings` crate. They are consumed by the Anoma protocol-adapter integration tests to deploy a mock verifier stack against a local chain.
 
-```sh
-forge build
-```
+The repository-level [`justfile`](./justfile) bundles the contract and bindings recipes (run `just` to list them); the [Release Checklist](./RELEASE_CHECKLIST.md) documents the deployment and publishing flows.
 
-#### Tests & Coverage
+## Security
 
-To run the tests, run
+If you believe you've found a security issue, we encourage you to notify us via Email
+at [security@anoma.foundation](mailto:security@anoma.foundation).
 
-```sh
-forge test
-```
-
-To show the coverage report, run
-
-```sh
-forge coverage
-```
-
-Append the
-
-- `--no-match-coverage "(script|test|draft)"` to exclude scripts, tests, and drafts,
-- `--report lcov` to generate the `lcov.info` file that can be used by code review tooling.
-
-#### Linting & Static Analysis
-
-As a prerequisite, install the
-
-- `solhint` linter (see https://github.com/protofire/solhint)
-- `slither` static analyzer (see https://github.com/crytic/slither)
-
-To run the linter and static analyzer, run
-
-```sh
-bunx solhint --config .solhint.json 'src/**/*.sol' && \
-bunx solhint --config .solhint.other.json 'script/**/*.sol' 'test/**/*.sol' && \
-slither .
-```
-
-#### Documentation
-
-Run
-
-```sh
-forge doc
-```
+Please do not use the issue tracker for security issues. We welcome working with you to resolve the issue promptly.

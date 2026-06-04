@@ -2,13 +2,22 @@
 
 Releases of the packages contained in this monorepo follow the [SemVer convention](https://semver.org/spec/v2.0.0.html).
 
-We distinguish between three release cases:
+> ![NOTE]
+> The `contracts` (soldeer) and `bindings` (crates.io) packages are independently versioned with `X.Y.Z` and `A.B.C`, respectively.
+
+We distinguish between the following release cases for the **contracts** package:
 
 - Adding RISC Zero contract deployments of a **new** RISC Zero protocol version resulting in a new `vX.0.0` version.
 
 - Adding new RISC Zero contract deployments of the **current** RISC Zero protocol version resulting in a new `vX.Y.0` version.
 
 - Correcting an existing RISC Zero contract of the **current** RISC Zero protocol version resulting in a new `vX.Y.Z` version.
+
+and for the **bindings** package:
+
+- Changing the bound contracts or supported networks resulting in a new `vA.0.0` version.
+
+- Maintaining the bindings (dependency bumps, fixes) resulting in a new `vA.B.C` version.
 
 ## Deploying RISC Zero contracts
 
@@ -119,11 +128,11 @@ For each chain, you want to deploy to, do the following:
 
 ### 5. Update the supported networks and create a GitHub Release
 
-- [ ] Update [`./src/SupportedNetworks.sol`](./src/SupportedNetworks.sol).
+- [ ] Update [`./contracts/src/SupportedNetworks.sol`](./contracts/src/SupportedNetworks.sol).
 
 - [ ] Merge a PR containing the work into main.
 
-- [ ] Create new [GH release](https://github.com/anoma/pa-evm/releases).
+- [ ] Create new [GH release](https://github.com/anoma/risc0-deployments/releases).
 
 ### 6. Publish a new Soldeer package
 
@@ -133,4 +142,46 @@ For each chain, you want to deploy to, do the following:
   just contracts-publish <X.Y.Z> --dry-run
   ```
 
-  where `<X.Y.Z>` is the `_PROTOCOL_ADAPTER_VERSION` number and check the resulting `.zip` file. If everything is correct, remove the `--dry-run` flag and publish the package.
+  and check the resulting `.zip` file. If everything is correct, remove the `--dry-run` flag and publish the package.
+
+## Releasing the Bindings
+
+### 1. Prerequisites
+
+- [ ] Check that the bindings are up-to-date with
+
+  ```sh
+  just bindings-check
+  ```
+
+- [ ] Checkout a new git branch branching off from `main`.
+
+- [ ] Check that there are no staged or unstaged changes by running `git status`.
+
+### 2. Bump and Test the Bindings
+
+- [ ] Change the `bindings` package version number in the [`./bindings/Cargo.toml`](./bindings/Cargo.toml) file to `A.B.C` following [SemVer](https://semver.org/spec/v2.0.0.html).
+
+- [ ] Clean the bindings build with `just bindings-clean`.
+
+- [ ] Regenerate the bindings with `just contracts-gen-bindings` and check that `just bindings-check` passes.
+
+- [ ] Run `just bindings-build` and check that the `Cargo.lock` file reflects the version number change.
+
+- [ ] Run the tests with `just bindings-test`.
+
+### 3. Create a new `bindings` GitHub Release
+
+- [ ] After merging, create a new `bindings/vA.B.C` tag.
+
+- [ ] Create a new [GH release](https://github.com/anoma/risc0-deployments/releases).
+
+### 4. Publish a new `bindings` package
+
+- [ ] Publish the `anoma-risc0-deployments-bindings` package on https://crates.io/ with
+
+  ```sh
+  just bindings-publish --dry-run
+  ```
+
+  and check the result. If everything is correct, remove the `--dry-run` flag and publish the package.

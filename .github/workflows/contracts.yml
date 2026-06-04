@@ -39,9 +39,11 @@ jobs:
 
       - name: Show Bun version
         run: bun --version
+        working-directory: ./contracts
 
       - name: Install Solhint
         run: bun install solhint
+        working-directory: ./contracts
 
       - name: Run Forge Lint
         run: just contracts-lint
