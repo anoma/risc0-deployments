@@ -9,93 +9,95 @@ default:
 
 # Install contract dependencies
 contracts-deps:
-    forge soldeer install
+    cd contracts && forge soldeer install
 
 # Clean contract dependencies
 contracts-deps-clean:
-    forge soldeer clean
+    cd contracts && forge soldeer clean
 
 # Clean contracts
 contracts-clean:
-    forge clean
+    cd contracts && forge clean
 
 # Build contracts
 contracts-build *args:
-    forge build {{ args }}
+    cd contracts && forge build {{ args }}
 
 # Lint contracts (forge lint + solhint)
 contracts-lint:
-    forge lint --deny warnings
-    bunx --bun solhint --config .solhint.json 'src/**/*.sol'
-    bunx --bun solhint --config .solhint.other.json 'test/**/*.sol'
-    bunx --bun solhint --config .solhint.other.json 'script/**/*.sol'
+    cd contracts && forge lint --deny warnings
+    cd contracts && bunx --bun solhint --config .solhint.json 'src/**/*.sol'
+    cd contracts && bunx --bun solhint --config .solhint.other.json 'test/**/*.sol'
+    cd contracts && bunx --bun solhint --config .solhint.other.json 'script/**/*.sol'
 
 # Run slither on contracts
 contracts-static-analysis:
-    slither .
+    cd contracts && slither .
     @echo "Removing slither compilation artifacts..."
-    forge clean
+    cd contracts && forge clean
 
 # Format contracts
 contracts-fmt *args:
-    forge fmt {{ args }}
+    cd contracts && forge fmt {{ args }}
 
 # Check contract formatting
 contracts-fmt-check:
-    forge fmt --check
+    cd contracts && forge fmt --check
 
 # Run contract tests
 contracts-test *args:
-    forge test {{ args }}
+    cd contracts && forge test {{ args }}
 
 # Simulate deployment (dry-run)
 contracts-simulate admin guardian chain *args:
-    forge script \
+    cd contracts && forge script \
         script/DeployRiscZeroContracts.s.sol:DeployRiscZeroContracts \
         --sig "run(address,address)" {{admin}} {{guardian}} \
         --rpc-url {{chain}} {{ args }}
 
 # Deploy RISC Zero contracts (router + groth16 + emergency stop)
 contracts-deploy deployer admin guardian chain *args:
-    forge script \
+    cd contracts && forge script \
         script/DeployRiscZeroContracts.s.sol:DeployRiscZeroContracts \
         --sig "run(address,address)" {{admin}} {{guardian}} \
         --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
 
 # Verify RISC Zero contracts on Sourcify
 contracts-verify-sourcify groth16 estop router chain *args:
-    env -u ETHERSCAN_API_KEY \
+    cd contracts && env -u ETHERSCAN_API_KEY \
     forge verify-contract {{groth16}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier sourcify --watch {{ args }}
+    cd contracts && env -u ETHERSCAN_API_KEY \
     forge verify-contract {{estop}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
         --chain {{chain}} --verifier sourcify  --watch {{ args }}
+    cd contracts && env -u ETHERSCAN_API_KEY \
     forge verify-contract {{router}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
         --chain {{chain}} --verifier sourcify --watch {{ args }}
 
 # Verify on etherscan
 contracts-verify-etherscan groth16 estop router chain *args:
-    forge verify-contract {{groth16}} \
+    cd contracts && forge verify-contract {{groth16}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier etherscan --watch  {{ args }}
-    forge verify-contract {{estop}} \
+    cd contracts && forge verify-contract {{estop}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
         --chain {{chain}} --verifier etherscan  --watch {{ args }}
-    forge verify-contract {{router}} \
+    cd contracts && forge verify-contract {{router}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
         --chain {{chain}} --verifier etherscan --watch {{ args }}
 
 # Verify on custom explorer
 contracts-verify-custom groth16 estop router chain verifier-url *args:
-    forge verify-contract {{groth16}} \
+    cd contracts && forge verify-contract {{groth16}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier-url {{verifier-url}} --watch  {{ args }}
-    forge verify-contract {{estop}} \
+    cd contracts && forge verify-contract {{estop}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
         --chain {{chain}} --verifier-url {{verifier-url}}  --watch {{ args }}
-    forge verify-contract {{router}} \
+    cd contracts && forge verify-contract {{router}} \
         dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
         --chain {{chain}} --verifier-url {{verifier-url}} --watch {{ args }}
 
@@ -104,9 +106,87 @@ contracts-verify groth16 estop router chain: (contracts-verify-sourcify groth16 
 
 # Publish contracts
 contracts-publish version *args:
-    forge soldeer push anoma-risc0-deployments~{{version}} {{ args }}
+    cd contracts && forge soldeer push anoma-risc0-deployments~{{version}} {{ args }}
+
+# Regenerate Rust bindings from the RISC Zero verifier contracts
+contracts-gen-bindings:
+    cd contracts && forge clean && forge bind \
+        --select '^(RiscZeroGroth16Verifier|RiscZeroMockVerifier|RiscZeroVerifierEmergencyStop|RiscZeroVerifierRouter)$' \
+        --bindings-path ../bindings/src/generated/ \
+        --module \
+        --overwrite
+
+# --- Bindings ---
+
+# Clean bindings
+bindings-clean:
+    cd bindings && cargo clean
+
+# Build bindings
+bindings-build *args:
+    cd bindings && cargo build {{ args }}
+
+# Test bindings
+bindings-test *args:
+    cd bindings && cargo test {{ args }}
+
+# Check bindings are up-to-date
+bindings-check: contracts-gen-bindings
+    git diff --exit-code bindings/src/generated/
+
+# Lint bindings (clippy)
+bindings-lint:
+    cd bindings && cargo clippy --no-deps -- -Dwarnings
+    cd bindings && cargo clippy --no-deps --tests -- -Dwarnings
+
+# Format bindings
+bindings-fmt *args:
+    cd bindings && cargo fmt {{ args }}
+
+# Check bindings formatting
+bindings-fmt-check:
+    cd bindings && cargo fmt -- --check
+
+# Publish bindings
+bindings-publish *args:
+    cd bindings && cargo publish {{ args }}
 
 # --- All ---
+
+# Lint all (contracts + bindings)
+all-lint:
+    @echo "==> Linting contracts..."
+    @just contracts-lint
+    @echo "==> Linting bindings..."
+    @just bindings-lint
+
+# Format all (contracts + bindings)
+all-fmt:
+    @echo "==> Formatting contracts..."
+    @just contracts-fmt
+    @echo "==> Formatting bindings..."
+    @just bindings-fmt
+
+# Check formatting for all (contracts + bindings)
+all-fmt-check:
+    @echo "==> Checking contract formatting..."
+    @just contracts-fmt-check
+    @echo "==> Checking bindings formatting..."
+    @just bindings-fmt-check
+
+# Build all (contracts + bindings)
+all-build:
+    @echo "==> Building contracts..."
+    @just contracts-build
+    @echo "==> Building bindings..."
+    @just bindings-build
+
+# Test all (contracts + bindings)
+all-test:
+    @echo "==> Testing contracts..."
+    @just contracts-test
+    @echo "==> Testing bindings..."
+    @just bindings-test
 
 # Prerequisites check (mirrors CI)
 all-check:
@@ -114,6 +194,8 @@ all-check:
     @echo "==> Static analysis with slither..."
     @just contracts-static-analysis
     @echo "==> Checking formatting..."
-    @just contracts-fmt-check
+    @just all-fmt-check
     @echo "==> Linting..."
-    @just contracts-lint
+    @just all-lint
+    @echo "==> Checking bindings are up-to-date..."
+    @just bindings-check
