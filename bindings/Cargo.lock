@@ -643,8 +643,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "anoma-risc0-deployments-bindings"
-version = "0.1.0"
+name = "anoma-risc0-verifier-bindings"
+version = "1.0.0-rc.0"
 dependencies = [
  "alloy",
  "serde",
