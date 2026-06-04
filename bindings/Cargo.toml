@@ -1,0 +1,19 @@
+[package]
+name = "anoma-risc0-deployments-bindings"
+version = "0.1.0"
+description = "Rust bindings for the RISC Zero verifier contracts (Groth16, mock, router, emergency stop)."
+authors = ["Anoma Foundation"]
+license = "MIT"
+homepage = "https://anoma.net/"
+repository = "https://github.com/anoma/risc0-deployments"
+edition = "2024"
+
+[dependencies]
+alloy = { version = "2.0.5", features = [
+  "contract",
+  "json",
+  "providers",
+  "rpc-types",
+  "sol-types",
+] }
+serde = { version = "1", default-features = false, features = ["derive"] }

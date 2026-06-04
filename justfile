@@ -106,6 +106,40 @@ contracts-verify groth16 estop router chain: (contracts-verify-sourcify groth16 
 contracts-publish version *args:
     forge soldeer push anoma-risc0-deployments~{{version}} {{ args }}
 
+# --- Bindings ---
+
+# Regenerate Rust bindings from the RISC Zero verifier contracts
+contracts-gen-bindings:
+    forge clean && forge bind \
+        --select '^(RiscZeroGroth16Verifier|RiscZeroMockVerifier|RiscZeroVerifierEmergencyStop|RiscZeroVerifierRouter)$' \
+        --bindings-path bindings/src/generated/ \
+        --module \
+        --overwrite
+
+# Build bindings
+bindings-build *args:
+    cd bindings && cargo build {{ args }}
+
+# Check bindings are up-to-date
+bindings-check: contracts-gen-bindings
+    git diff --exit-code bindings/src/generated/
+
+# Lint bindings (clippy)
+bindings-lint:
+    cd bindings && cargo clippy --no-deps -- -Dwarnings
+
+# Format bindings
+bindings-fmt *args:
+    cd bindings && cargo fmt {{ args }}
+
+# Check bindings formatting
+bindings-fmt-check:
+    cd bindings && cargo fmt -- --check
+
+# Publish bindings
+bindings-publish *args:
+    cd bindings && cargo publish {{ args }}
+
 # --- All ---
 
 # Prerequisites check (mirrors CI)
@@ -117,3 +151,5 @@ all-check:
     @just contracts-fmt-check
     @echo "==> Linting..."
     @just contracts-lint
+    @echo "==> Checking bindings are up-to-date..."
+    @just bindings-check
