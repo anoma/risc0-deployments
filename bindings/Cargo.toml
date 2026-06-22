@@ -1,6 +1,6 @@
 [package]
 name = "anoma-risc0-verifier-bindings"
-version = "1.0.0-rc.0"
+version = "1.2.0"
 description = "Rust bindings for the RISC Zero verifier contracts (Groth16, mock, router, emergency stop)."
 authors = ["Anoma Foundation"]
 license = "MIT"
