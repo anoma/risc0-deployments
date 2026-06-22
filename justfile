@@ -50,6 +50,10 @@ contracts-test *args:
 
 # Simulate deployment (dry-run)
 contracts-simulate admin guardian chain *args:
+    @echo "ADMIN: $ADMIN"
+    @echo "GUARDIAN: $GUARDIAN"
+    @echo "Cleaning contracts to ensure reproducible build..."
+    @just contracts-clean
     cd contracts && forge script \
         script/DeployRiscZeroContracts.s.sol:DeployRiscZeroContracts \
         --sig "run(address,address)" {{admin}} {{guardian}} \
@@ -57,6 +61,8 @@ contracts-simulate admin guardian chain *args:
 
 # Deploy RISC Zero contracts (router + groth16 + emergency stop)
 contracts-deploy deployer admin guardian chain *args:
+    @echo "Cleaning contracts to ensure reproducible build..."
+    @just contracts-clean
     cd contracts && forge script \
         script/DeployRiscZeroContracts.s.sol:DeployRiscZeroContracts \
         --sig "run(address,address)" {{admin}} {{guardian}} \

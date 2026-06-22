@@ -117,6 +117,20 @@ contract SupportedNetworks {
             riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
             isAnomaDeployed: true
         });
+
+        _supportNetwork({
+            name: "stable-mainnet",
+            chainId: 988,
+            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            isAnomaDeployed: true
+        });
+
+        _supportNetwork({
+            name: "megaeth",
+            chainId: 4326,
+            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            isAnomaDeployed: true
+        });
     }
 
     // solhint-disable comprehensive-interface
