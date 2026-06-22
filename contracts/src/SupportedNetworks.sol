@@ -131,6 +131,13 @@ contract SupportedNetworks {
             riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
             isAnomaDeployed: true
         });
+
+        _supportNetwork({
+            name: "aurora",
+            chainId: 1313161554,
+            riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
+            isAnomaDeployed: true
+        });
     }
 
     // solhint-disable comprehensive-interface
