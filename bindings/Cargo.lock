@@ -660,7 +660,7 @@ dependencies = [
 
 [[package]]
 name = "anoma-risc0-verifier-bindings"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
  "alloy",
  "serde",
