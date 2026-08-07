@@ -16,7 +16,7 @@ fs_permissions = [{ access = "read", path = "./" }]
 libs = ["dependencies"]
 auto_detect_remappings = false
 remappings = [
-    "forge-std-1.16.1/=dependencies/forge-std-1.16.1/",
+    "forge-std-1.16.2/=dependencies/forge-std-1.16.2/",
     "openzeppelin/contracts/=dependencies/risc0-risc0-ethereum-3.0.1/lib/openzeppelin-contracts/contracts/",
     "risc0-risc0-ethereum-3.0.1/=dependencies/risc0-risc0-ethereum-3.0.1/",
 ]
@@ -25,7 +25,7 @@ ignored_warnings_from = [
 ]
 
 [dependencies]
-"forge-std" = "1.16.1"
+"forge-std" = "1.16.2"
 "risc0-risc0-ethereum" = "3.0.1"
 
 [soldeer]
