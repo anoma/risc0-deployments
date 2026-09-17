@@ -116,7 +116,10 @@ contracts-publish version *args:
 
 # Regenerate Rust bindings from the RISC Zero verifier contracts
 contracts-gen-bindings:
-    cd contracts && forge clean && forge bind \
+    # `forge bind` builds without bytecode, which drops the `deploy` helpers, so
+    # build first and let it read those artifacts.
+    cd contracts && forge clean && forge build && forge bind \
+        --skip-build \
         --select '^(RiscZeroGroth16Verifier|RiscZeroMockVerifier|RiscZeroVerifierEmergencyStop|RiscZeroVerifierRouter)$' \
         --bindings-path ../bindings/src/generated/ \
         --module \
