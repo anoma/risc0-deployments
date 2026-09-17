@@ -529,10 +529,10 @@ error SelectorMismatch(bytes4 received, bytes4 expected);
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -603,10 +603,10 @@ error VerificationFailed();
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -808,16 +808,29 @@ function SELECTOR() external view returns (bytes4);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: SELECTORReturn = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -958,16 +971,29 @@ function mockProve(bytes32 claimDigest) external view returns (Receipt memory);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: mockProve_0Return = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1125,16 +1151,29 @@ function mockProve(bytes32 imageId, bytes32 journalDigest) external view returns
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: mockProve_1Return = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1298,13 +1337,26 @@ function verify(bytes memory seal, bytes32 imageId, bytes32 journalDigest) exter
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1442,20 +1494,33 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
     ///Container for all the [`RiscZeroMockVerifier`](self) function calls.
     #[derive(Clone)]
     #[derive(serde::Serialize, serde::Deserialize)]
-    #[derive()]
+    #[derive(Debug, PartialEq, Eq, Hash)]
     pub enum RiscZeroMockVerifierCalls {
         #[allow(missing_docs)]
         SELECTOR(SELECTORCall),
@@ -1554,14 +1619,32 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::default(),
+            )
+        }
+        #[inline]
+        #[allow(non_snake_case)]
+        fn abi_decode_raw_with_config(
+            selector: [u8; 4],
+            data: &[u8],
+            config: alloy_sol_types::abi::AbiDecoderConfig,
+        ) -> alloy_sol_types::Result<Self> {
             static DECODE_SHIMS: &[fn(
                 &[u8],
+                alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls>] = &[
                 {
                     fn SELECTOR(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <SELECTORCall as alloy_sol_types::SolCall>::abi_decode_raw(data)
+                        <SELECTORCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
+                                data,
+                                config,
+                            )
                             .map(RiscZeroMockVerifierCalls::SELECTOR)
                     }
                     SELECTOR
@@ -1569,9 +1652,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn verifyIntegrity(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <verifyIntegrityCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <verifyIntegrityCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroMockVerifierCalls::verifyIntegrity)
                     }
@@ -1580,9 +1665,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn mockProve_0(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <mockProve_0Call as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <mockProve_0Call as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroMockVerifierCalls::mockProve_0)
                     }
@@ -1591,9 +1678,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn mockProve_1(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <mockProve_1Call as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <mockProve_1Call as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroMockVerifierCalls::mockProve_1)
                     }
@@ -1602,8 +1691,12 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn verify(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <verifyCall as alloy_sol_types::SolCall>::abi_decode_raw(data)
+                        <verifyCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
+                                data,
+                                config,
+                            )
                             .map(RiscZeroMockVerifierCalls::verify)
                     }
                     verify
@@ -1617,7 +1710,7 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     ),
                 );
             };
-            DECODE_SHIMS[idx](data)
+            DECODE_SHIMS[idx](data, config)
         }
         #[inline]
         #[allow(non_snake_case)]
@@ -1625,74 +1718,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
-            static DECODE_VALIDATE_SHIMS: &[fn(
-                &[u8],
-            ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls>] = &[
-                {
-                    fn SELECTOR(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <SELECTORCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierCalls::SELECTOR)
-                    }
-                    SELECTOR
-                },
-                {
-                    fn verifyIntegrity(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <verifyIntegrityCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierCalls::verifyIntegrity)
-                    }
-                    verifyIntegrity
-                },
-                {
-                    fn mockProve_0(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <mockProve_0Call as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierCalls::mockProve_0)
-                    }
-                    mockProve_0
-                },
-                {
-                    fn mockProve_1(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <mockProve_1Call as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierCalls::mockProve_1)
-                    }
-                    mockProve_1
-                },
-                {
-                    fn verify(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierCalls> {
-                        <verifyCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierCalls::verify)
-                    }
-                    verify
-                },
-            ];
-            let Ok(idx) = Self::SELECTORS.binary_search(&selector) else {
-                return Err(
-                    alloy_sol_types::Error::unknown_selector(
-                        <Self as alloy_sol_types::SolInterface>::NAME,
-                        selector,
-                    ),
-                );
-            };
-            DECODE_VALIDATE_SHIMS[idx](data)
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+            )
         }
         #[inline]
         fn abi_encoded_size(&self) -> usize {
@@ -1835,15 +1865,31 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::default(),
+            )
+        }
+        #[inline]
+        #[allow(non_snake_case)]
+        fn abi_decode_raw_with_config(
+            selector: [u8; 4],
+            data: &[u8],
+            config: alloy_sol_types::abi::AbiDecoderConfig,
+        ) -> alloy_sol_types::Result<Self> {
             static DECODE_SHIMS: &[fn(
                 &[u8],
+                alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<RiscZeroMockVerifierErrors>] = &[
                 {
                     fn VerificationFailed(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierErrors> {
-                        <VerificationFailed as alloy_sol_types::SolError>::abi_decode_raw(
+                        <VerificationFailed as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroMockVerifierErrors::VerificationFailed)
                     }
@@ -1852,9 +1898,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn SelectorMismatch(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroMockVerifierErrors> {
-                        <SelectorMismatch as alloy_sol_types::SolError>::abi_decode_raw(
+                        <SelectorMismatch as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroMockVerifierErrors::SelectorMismatch)
                     }
@@ -1869,7 +1917,7 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     ),
                 );
             };
-            DECODE_SHIMS[idx](data)
+            DECODE_SHIMS[idx](data, config)
         }
         #[inline]
         #[allow(non_snake_case)]
@@ -1877,41 +1925,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
-            static DECODE_VALIDATE_SHIMS: &[fn(
-                &[u8],
-            ) -> alloy_sol_types::Result<RiscZeroMockVerifierErrors>] = &[
-                {
-                    fn VerificationFailed(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierErrors> {
-                        <VerificationFailed as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierErrors::VerificationFailed)
-                    }
-                    VerificationFailed
-                },
-                {
-                    fn SelectorMismatch(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroMockVerifierErrors> {
-                        <SelectorMismatch as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroMockVerifierErrors::SelectorMismatch)
-                    }
-                    SelectorMismatch
-                },
-            ];
-            let Ok(idx) = Self::SELECTORS.binary_search(&selector) else {
-                return Err(
-                    alloy_sol_types::Error::unknown_selector(
-                        <Self as alloy_sol_types::SolInterface>::NAME,
-                        selector,
-                    ),
-                );
-            };
-            DECODE_VALIDATE_SHIMS[idx](data)
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+            )
         }
         #[inline]
         fn abi_encoded_size(&self) -> usize {
@@ -1944,6 +1962,33 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     )
                 }
             }
+        }
+    }
+    #[automatically_derived]
+    impl RiscZeroMockVerifierErrors {
+        /**Creates a [`SelectorMismatch`] error.
+
+```solidity
+error SelectorMismatch(bytes4,bytes4)
+```*/
+        #[inline]
+        pub fn selector_mismatch(
+            received: alloy::sol_types::private::FixedBytes<4>,
+            expected: alloy::sol_types::private::FixedBytes<4>,
+        ) -> Self {
+            Self::SelectorMismatch(SelectorMismatch {
+                received: received,
+                expected: expected,
+            })
+        }
+        /**Creates a [`VerificationFailed`] error.
+
+```solidity
+error VerificationFailed()
+```*/
+        #[inline]
+        pub fn verification_failed() -> Self {
+            Self::VerificationFailed(VerificationFailed)
         }
     }
     use alloy::contract as alloy_contract;

@@ -667,10 +667,10 @@ error OwnableInvalidOwner(address owner);
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -750,10 +750,10 @@ error OwnableUnauthorizedAccount(address account);
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -831,10 +831,10 @@ error SelectorInUse(bytes4 selector);
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -912,10 +912,10 @@ error SelectorRemoved(bytes4 selector);
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -993,10 +993,10 @@ error SelectorUnknown(bytes4 selector);
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1067,10 +1067,10 @@ error VerifierAddressZero();
             }
             #[inline]
             fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
-                <Self::Parameters<
-                    '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
-                    .map(Self::new)
+                Self::abi_decode_raw_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1511,13 +1511,26 @@ function acceptOwnership() external;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1672,13 +1685,26 @@ function addVerifier(bytes4 selector, address verifier) external;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1821,16 +1847,29 @@ function getVerifier(bytes4 selector) external view returns (address);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: getVerifier_0Return = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -1973,16 +2012,29 @@ function getVerifier(bytes memory seal) external view returns (address);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: getVerifier_1Return = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -2118,16 +2170,29 @@ function owner() external view returns (address);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: ownerReturn = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -2263,16 +2328,29 @@ function pendingOwner() external view returns (address);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: pendingOwnerReturn = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -2412,13 +2490,26 @@ function removeVerifier(bytes4 selector) external;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -2553,13 +2644,26 @@ function renounceOwnership() external;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -2701,13 +2805,26 @@ function transferOwnership(address newOwner) external;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -2847,16 +2964,29 @@ function verifiers(bytes4) external view returns (address);
                     })
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(|r| {
                         let r: verifiersReturn = r.into();
                         r._0
                     })
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -3020,13 +3150,26 @@ function verify(bytes memory seal, bytes32 imageId, bytes32 journalDigest) exter
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
@@ -3164,20 +3307,33 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     .map(Into::into)
             }
             #[inline]
-            fn abi_decode_returns_validate(
+            fn abi_decode_returns_with_config(
                 data: &[u8],
+                config: alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<Self::Return> {
                 <Self::ReturnTuple<
                     '_,
-                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                > as alloy_sol_types::SolType>::abi_decode_sequence_with_config(
+                        data,
+                        config,
+                    )
                     .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                Self::abi_decode_returns_with_config(
+                    data,
+                    alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+                )
             }
         }
     };
     ///Container for all the [`RiscZeroVerifierRouter`](self) function calls.
     #[derive(Clone)]
     #[derive(serde::Serialize, serde::Deserialize)]
-    #[derive()]
+    #[derive(Debug, PartialEq, Eq, Hash)]
     pub enum RiscZeroVerifierRouterCalls {
         #[allow(missing_docs)]
         acceptOwnership(acceptOwnershipCall),
@@ -3332,15 +3488,31 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::default(),
+            )
+        }
+        #[inline]
+        #[allow(non_snake_case)]
+        fn abi_decode_raw_with_config(
+            selector: [u8; 4],
+            data: &[u8],
+            config: alloy_sol_types::abi::AbiDecoderConfig,
+        ) -> alloy_sol_types::Result<Self> {
             static DECODE_SHIMS: &[fn(
                 &[u8],
+                alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls>] = &[
                 {
                     fn verifyIntegrity(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <verifyIntegrityCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <verifyIntegrityCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::verifyIntegrity)
                     }
@@ -3349,9 +3521,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn getVerifier_0(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <getVerifier_0Call as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <getVerifier_0Call as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::getVerifier_0)
                     }
@@ -3360,9 +3534,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn renounceOwnership(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <renounceOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <renounceOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::renounceOwnership)
                     }
@@ -3371,9 +3547,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn acceptOwnership(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <acceptOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <acceptOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::acceptOwnership)
                     }
@@ -3382,8 +3560,12 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn owner(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <ownerCall as alloy_sol_types::SolCall>::abi_decode_raw(data)
+                        <ownerCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
+                                data,
+                                config,
+                            )
                             .map(RiscZeroVerifierRouterCalls::owner)
                     }
                     owner
@@ -3391,9 +3573,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn removeVerifier(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <removeVerifierCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <removeVerifierCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::removeVerifier)
                     }
@@ -3402,8 +3586,12 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn verify(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <verifyCall as alloy_sol_types::SolCall>::abi_decode_raw(data)
+                        <verifyCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
+                                data,
+                                config,
+                            )
                             .map(RiscZeroVerifierRouterCalls::verify)
                     }
                     verify
@@ -3411,9 +3599,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn getVerifier_1(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <getVerifier_1Call as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <getVerifier_1Call as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::getVerifier_1)
                     }
@@ -3422,9 +3612,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn addVerifier(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <addVerifierCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <addVerifierCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::addVerifier)
                     }
@@ -3433,9 +3625,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn pendingOwner(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <pendingOwnerCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <pendingOwnerCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::pendingOwner)
                     }
@@ -3444,9 +3638,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn transferOwnership(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <transferOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                        <transferOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterCalls::transferOwnership)
                     }
@@ -3455,8 +3651,12 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn verifiers(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <verifiersCall as alloy_sol_types::SolCall>::abi_decode_raw(data)
+                        <verifiersCall as alloy_sol_types::SolCall>::abi_decode_raw_with_config(
+                                data,
+                                config,
+                            )
                             .map(RiscZeroVerifierRouterCalls::verifiers)
                     }
                     verifiers
@@ -3470,7 +3670,7 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     ),
                 );
             };
-            DECODE_SHIMS[idx](data)
+            DECODE_SHIMS[idx](data, config)
         }
         #[inline]
         #[allow(non_snake_case)]
@@ -3478,151 +3678,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
-            static DECODE_VALIDATE_SHIMS: &[fn(
-                &[u8],
-            ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls>] = &[
-                {
-                    fn verifyIntegrity(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <verifyIntegrityCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::verifyIntegrity)
-                    }
-                    verifyIntegrity
-                },
-                {
-                    fn getVerifier_0(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <getVerifier_0Call as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::getVerifier_0)
-                    }
-                    getVerifier_0
-                },
-                {
-                    fn renounceOwnership(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <renounceOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::renounceOwnership)
-                    }
-                    renounceOwnership
-                },
-                {
-                    fn acceptOwnership(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <acceptOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::acceptOwnership)
-                    }
-                    acceptOwnership
-                },
-                {
-                    fn owner(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <ownerCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::owner)
-                    }
-                    owner
-                },
-                {
-                    fn removeVerifier(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <removeVerifierCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::removeVerifier)
-                    }
-                    removeVerifier
-                },
-                {
-                    fn verify(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <verifyCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::verify)
-                    }
-                    verify
-                },
-                {
-                    fn getVerifier_1(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <getVerifier_1Call as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::getVerifier_1)
-                    }
-                    getVerifier_1
-                },
-                {
-                    fn addVerifier(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <addVerifierCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::addVerifier)
-                    }
-                    addVerifier
-                },
-                {
-                    fn pendingOwner(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <pendingOwnerCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::pendingOwner)
-                    }
-                    pendingOwner
-                },
-                {
-                    fn transferOwnership(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <transferOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::transferOwnership)
-                    }
-                    transferOwnership
-                },
-                {
-                    fn verifiers(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterCalls> {
-                        <verifiersCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterCalls::verifiers)
-                    }
-                    verifiers
-                },
-            ];
-            let Ok(idx) = Self::SELECTORS.binary_search(&selector) else {
-                return Err(
-                    alloy_sol_types::Error::unknown_selector(
-                        <Self as alloy_sol_types::SolInterface>::NAME,
-                        selector,
-                    ),
-                );
-            };
-            DECODE_VALIDATE_SHIMS[idx](data)
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+            )
         }
         #[inline]
         fn abi_encoded_size(&self) -> usize {
@@ -3869,15 +3929,31 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::default(),
+            )
+        }
+        #[inline]
+        #[allow(non_snake_case)]
+        fn abi_decode_raw_with_config(
+            selector: [u8; 4],
+            data: &[u8],
+            config: alloy_sol_types::abi::AbiDecoderConfig,
+        ) -> alloy_sol_types::Result<Self> {
             static DECODE_SHIMS: &[fn(
                 &[u8],
+                alloy_sol_types::abi::AbiDecoderConfig,
             ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors>] = &[
                 {
                     fn OwnableUnauthorizedAccount(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <OwnableUnauthorizedAccount as alloy_sol_types::SolError>::abi_decode_raw(
+                        <OwnableUnauthorizedAccount as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(
                                 RiscZeroVerifierRouterErrors::OwnableUnauthorizedAccount,
@@ -3888,9 +3964,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn OwnableInvalidOwner(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <OwnableInvalidOwner as alloy_sol_types::SolError>::abi_decode_raw(
+                        <OwnableInvalidOwner as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterErrors::OwnableInvalidOwner)
                     }
@@ -3899,9 +3977,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn SelectorInUse(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <SelectorInUse as alloy_sol_types::SolError>::abi_decode_raw(
+                        <SelectorInUse as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterErrors::SelectorInUse)
                     }
@@ -3910,9 +3990,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn VerifierAddressZero(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <VerifierAddressZero as alloy_sol_types::SolError>::abi_decode_raw(
+                        <VerifierAddressZero as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterErrors::VerifierAddressZero)
                     }
@@ -3921,9 +4003,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn SelectorRemoved(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <SelectorRemoved as alloy_sol_types::SolError>::abi_decode_raw(
+                        <SelectorRemoved as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterErrors::SelectorRemoved)
                     }
@@ -3932,9 +4016,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
                 {
                     fn SelectorUnknown(
                         data: &[u8],
+                        config: alloy_sol_types::abi::AbiDecoderConfig,
                     ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <SelectorUnknown as alloy_sol_types::SolError>::abi_decode_raw(
+                        <SelectorUnknown as alloy_sol_types::SolError>::abi_decode_raw_with_config(
                                 data,
+                                config,
                             )
                             .map(RiscZeroVerifierRouterErrors::SelectorUnknown)
                     }
@@ -3949,7 +4035,7 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     ),
                 );
             };
-            DECODE_SHIMS[idx](data)
+            DECODE_SHIMS[idx](data, config)
         }
         #[inline]
         #[allow(non_snake_case)]
@@ -3957,87 +4043,11 @@ function verifyIntegrity(Receipt memory receipt) external view;
             selector: [u8; 4],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
-            static DECODE_VALIDATE_SHIMS: &[fn(
-                &[u8],
-            ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors>] = &[
-                {
-                    fn OwnableUnauthorizedAccount(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <OwnableUnauthorizedAccount as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(
-                                RiscZeroVerifierRouterErrors::OwnableUnauthorizedAccount,
-                            )
-                    }
-                    OwnableUnauthorizedAccount
-                },
-                {
-                    fn OwnableInvalidOwner(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <OwnableInvalidOwner as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterErrors::OwnableInvalidOwner)
-                    }
-                    OwnableInvalidOwner
-                },
-                {
-                    fn SelectorInUse(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <SelectorInUse as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterErrors::SelectorInUse)
-                    }
-                    SelectorInUse
-                },
-                {
-                    fn VerifierAddressZero(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <VerifierAddressZero as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterErrors::VerifierAddressZero)
-                    }
-                    VerifierAddressZero
-                },
-                {
-                    fn SelectorRemoved(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <SelectorRemoved as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterErrors::SelectorRemoved)
-                    }
-                    SelectorRemoved
-                },
-                {
-                    fn SelectorUnknown(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<RiscZeroVerifierRouterErrors> {
-                        <SelectorUnknown as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(RiscZeroVerifierRouterErrors::SelectorUnknown)
-                    }
-                    SelectorUnknown
-                },
-            ];
-            let Ok(idx) = Self::SELECTORS.binary_search(&selector) else {
-                return Err(
-                    alloy_sol_types::Error::unknown_selector(
-                        <Self as alloy_sol_types::SolInterface>::NAME,
-                        selector,
-                    ),
-                );
-            };
-            DECODE_VALIDATE_SHIMS[idx](data)
+            Self::abi_decode_raw_with_config(
+                selector,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::new().validate(true),
+            )
         }
         #[inline]
         fn abi_encoded_size(&self) -> usize {
@@ -4114,6 +4124,81 @@ function verifyIntegrity(Receipt memory receipt) external view;
             }
         }
     }
+    #[automatically_derived]
+    impl RiscZeroVerifierRouterErrors {
+        /**Creates a [`OwnableInvalidOwner`] error.
+
+```solidity
+error OwnableInvalidOwner(address)
+```*/
+        #[inline]
+        pub fn ownable_invalid_owner(owner: alloy::sol_types::private::Address) -> Self {
+            Self::OwnableInvalidOwner(OwnableInvalidOwner {
+                owner: owner,
+            })
+        }
+        /**Creates a [`OwnableUnauthorizedAccount`] error.
+
+```solidity
+error OwnableUnauthorizedAccount(address)
+```*/
+        #[inline]
+        pub fn ownable_unauthorized_account(
+            account: alloy::sol_types::private::Address,
+        ) -> Self {
+            Self::OwnableUnauthorizedAccount(OwnableUnauthorizedAccount {
+                account: account,
+            })
+        }
+        /**Creates a [`SelectorInUse`] error.
+
+```solidity
+error SelectorInUse(bytes4)
+```*/
+        #[inline]
+        pub fn selector_in_use(
+            selector: alloy::sol_types::private::FixedBytes<4>,
+        ) -> Self {
+            Self::SelectorInUse(SelectorInUse {
+                selector: selector,
+            })
+        }
+        /**Creates a [`SelectorRemoved`] error.
+
+```solidity
+error SelectorRemoved(bytes4)
+```*/
+        #[inline]
+        pub fn selector_removed(
+            selector: alloy::sol_types::private::FixedBytes<4>,
+        ) -> Self {
+            Self::SelectorRemoved(SelectorRemoved {
+                selector: selector,
+            })
+        }
+        /**Creates a [`SelectorUnknown`] error.
+
+```solidity
+error SelectorUnknown(bytes4)
+```*/
+        #[inline]
+        pub fn selector_unknown(
+            selector: alloy::sol_types::private::FixedBytes<4>,
+        ) -> Self {
+            Self::SelectorUnknown(SelectorUnknown {
+                selector: selector,
+            })
+        }
+        /**Creates a [`VerifierAddressZero`] error.
+
+```solidity
+error VerifierAddressZero()
+```*/
+        #[inline]
+        pub fn verifier_address_zero() -> Self {
+            Self::VerifierAddressZero(VerifierAddressZero)
+        }
+    }
     ///Container for all the [`RiscZeroVerifierRouter`](self) events.
     #[derive(Clone)]
     #[derive(serde::Serialize, serde::Deserialize)]
@@ -4182,26 +4267,51 @@ function verifyIntegrity(Receipt memory receipt) external view;
             topics: &[alloy_sol_types::Word],
             data: &[u8],
         ) -> alloy_sol_types::Result<Self> {
+            <Self as alloy_sol_types::SolEventInterface>::decode_raw_log_with_config(
+                topics,
+                data,
+                alloy_sol_types::abi::AbiDecoderConfig::default(),
+            )
+        }
+        fn decode_raw_log_with_config(
+            topics: &[alloy_sol_types::Word],
+            data: &[u8],
+            config: alloy_sol_types::abi::AbiDecoderConfig,
+        ) -> alloy_sol_types::Result<Self> {
             match topics.first().copied() {
                 Some(
                     <OwnershipTransferStarted as alloy_sol_types::SolEvent>::SIGNATURE_HASH,
                 ) => {
-                    <OwnershipTransferStarted as alloy_sol_types::SolEvent>::decode_raw_log(
+                    <OwnershipTransferStarted as alloy_sol_types::SolEvent>::decode_raw_log_with_config(
                             topics,
                             data,
+                            config,
                         )
                         .map(Self::OwnershipTransferStarted)
                 }
                 Some(
                     <OwnershipTransferred as alloy_sol_types::SolEvent>::SIGNATURE_HASH,
                 ) => {
-                    <OwnershipTransferred as alloy_sol_types::SolEvent>::decode_raw_log(
+                    <OwnershipTransferred as alloy_sol_types::SolEvent>::decode_raw_log_with_config(
                             topics,
                             data,
+                            config,
                         )
                         .map(Self::OwnershipTransferred)
                 }
                 _ => {
+                    if topics
+                        .len()
+                        .checked_mul(alloy_sol_types::Word::len_bytes())
+                        .and_then(|len| len.checked_add(data.len()))
+                        .is_none_or(|len| len > config.get_memory_limit())
+                    {
+                        return alloy_sol_types::private::Err(
+                            alloy_sol_types::Error::MemoryLimitExceeded(
+                                config.get_memory_limit(),
+                            ),
+                        );
+                    }
                     alloy_sol_types::private::Err(alloy_sol_types::Error::InvalidLog {
                         name: <Self as alloy_sol_types::SolEventInterface>::NAME,
                         log: alloy_sol_types::private::Box::new(
@@ -4236,6 +4346,39 @@ function verifyIntegrity(Receipt memory receipt) external view;
                     alloy_sol_types::private::IntoLogData::into_log_data(inner)
                 }
             }
+        }
+    }
+    #[automatically_derived]
+    impl RiscZeroVerifierRouterEvents {
+        /**Creates a [`OwnershipTransferStarted`] event.
+
+```solidity
+event OwnershipTransferStarted(address,address)
+```*/
+        #[inline]
+        pub fn ownership_transfer_started(
+            previous_owner: alloy::sol_types::private::Address,
+            new_owner: alloy::sol_types::private::Address,
+        ) -> Self {
+            Self::OwnershipTransferStarted(OwnershipTransferStarted {
+                previousOwner: previous_owner,
+                newOwner: new_owner,
+            })
+        }
+        /**Creates a [`OwnershipTransferred`] event.
+
+```solidity
+event OwnershipTransferred(address,address)
+```*/
+        #[inline]
+        pub fn ownership_transferred(
+            previous_owner: alloy::sol_types::private::Address,
+            new_owner: alloy::sol_types::private::Address,
+        ) -> Self {
+            Self::OwnershipTransferred(OwnershipTransferred {
+                previousOwner: previous_owner,
+                newOwner: new_owner,
+            })
         }
     }
     use alloy::contract as alloy_contract;

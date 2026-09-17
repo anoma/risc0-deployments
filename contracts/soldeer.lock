@@ -1,3 +1,5 @@
+version = 2
+
 [[dependencies]]
 name = "forge-std"
 version = "1.16.2"
@@ -10,4 +12,4 @@ name = "risc0-risc0-ethereum"
 version = "3.0.1"
 url = "https://soldeer-revisions.s3.amazonaws.com/risc0-risc0-ethereum/3_0_1_09-11-2025_11:23:36_risc0-risc0-ethereum-3.0.zip"
 checksum = "894cb1442a71fcbef5f7e8984aab7e1cb3079ee8876a080926f0c66e07e50e58"
-integrity = "f7daeb66069f75241e7bef8e9ffac67a3cca86788a1197910c7a506547949c2c"
+integrity = "7363c17ff7bf6c1b0fa842944bfaffd8b5ebdcbecb85823be50df01b67f9cdfc"
