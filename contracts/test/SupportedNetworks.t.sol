@@ -33,10 +33,12 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         assertFalse(
             Pausable(
                     address(
-                        getRouterData().router
-                            .getVerifier({selector: RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR})
+                        getRouterData().router.getVerifier({
+                            selector: RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR
+                        })
                     )
-                ).paused(),
+                )
+                .paused(),
             "The verfier has been stopped."
         );
     }
