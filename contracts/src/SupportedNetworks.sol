@@ -25,6 +25,8 @@ contract SupportedNetworks {
 
     /// @notice Initializes the supported networks and associated RISC Zero verifier router addresses
     /// (see https://dev.risczero.com/api/3.0/blockchain-integration/contracts/verifier).
+    // NOTE: A repeated address is a separate router on each network, not a shared value.
+    // forge-lint: disable-next-item(literal-instead-of-constant)
     constructor() {
         _supportNetwork({
             name: "sepolia",

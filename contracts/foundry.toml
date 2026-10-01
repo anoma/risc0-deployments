@@ -16,7 +16,7 @@ fs_permissions = [{ access = "read", path = "./" }]
 libs = ["dependencies"]
 auto_detect_remappings = false
 remappings = [
-    "forge-std-1.16.2/=dependencies/forge-std-1.16.2/",
+    "forge-std-1.17.0/=dependencies/forge-std-1.17.0/",
     "openzeppelin/contracts/=dependencies/risc0-risc0-ethereum-3.0.1/lib/openzeppelin-contracts/contracts/",
     "risc0-risc0-ethereum-3.0.1/=dependencies/risc0-risc0-ethereum-3.0.1/",
 ]
@@ -24,8 +24,11 @@ ignored_warnings_from = [
     "dependencies/risc0-risc0-ethereum-3.0.1/contracts/src", # Warning 9170: Comparison of variables of contract type is deprecated
 ]
 
+[lint]
+severity = ["high", "medium", "low", "info", "gas", "code-size"] # The default leaves out info, gas, and code-size.
+
 [dependencies]
-"forge-std" = "1.16.2"
+"forge-std" = "1.17.0"
 "risc0-risc0-ethereum" = "3.0.1"
 
 [soldeer]
