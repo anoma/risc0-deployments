@@ -15,6 +15,10 @@ contracts-deps:
 contracts-deps-clean:
     cd contracts && forge soldeer clean
 
+# Install the contract tooling (solhint) from the lockfile
+contracts-tooling:
+    cd contracts && bun install --frozen-lockfile
+
 # Clean contracts
 contracts-clean:
     cd contracts && forge clean
