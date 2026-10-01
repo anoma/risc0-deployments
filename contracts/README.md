@@ -52,7 +52,7 @@ forge build
 
 #### Tests & Coverage
 
-To run the tests, run
+The tests fork the supported networks through Alchemy, so export `ALCHEMY_API_KEY` first (see `.env-example`). To run the tests, run
 
 ```sh
 forge test
@@ -76,20 +76,24 @@ As a prerequisite, install the
 - `solhint` linter (see https://github.com/protofire/solhint)
 - `slither` static analyzer (see https://github.com/crytic/slither)
 
-To run the linter and static analyzer, run
+To run the linters and static analyzer, run
 
 ```sh
-bunx solhint --config .solhint.json 'src/**/*.sol' && \
-bunx solhint --config .solhint.other.json 'script/**/*.sol' 'test/**/*.sol' && \
+forge lint --deny notes --report-unused-suppressions && \
+bunx solhint --max-warnings 0 --config .solhint.json 'src/**/*.sol' && \
+bunx solhint --max-warnings 0 --config .solhint.other.json 'script/**/*.sol' 'test/**/*.sol' && \
 slither .
 ```
+
+`forge lint` runs its full rule set on `src` only. solhint checks `src` for the rules that `forge lint` lacks, and checks `script` and `test` with the relaxed `.solhint.other.json`.
 
 #### Rust Bindings
 
 To regenerate the Rust bindings (see the [forge bind](https://getfoundry.sh/forge/reference/bind/) documentation), run
 
 ```sh
-forge bind \
+forge clean && forge build && forge bind \
+  --skip-build \
   --select '^(RiscZeroGroth16Verifier|RiscZeroMockVerifier|RiscZeroVerifierEmergencyStop|RiscZeroVerifierRouter)$' \
   --bindings-path ../bindings/src/generated/ \
   --module \

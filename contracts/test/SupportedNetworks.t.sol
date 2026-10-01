@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
-import {Test} from "forge-std-1.16.2/src/Test.sol";
+import {Test} from "forge-std-1.17.0/src/Test.sol";
 
 import {Pausable} from "openzeppelin/contracts/utils/Pausable.sol";
 
@@ -15,7 +15,6 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
 
     constructor() SupportedNetworks() {}
 
-    // forge-lint: disable-next-line(mixed-case-function)
     function tableNetworksTest_SupportedNetworks_the_risc_zero_router_routes_to_the_groth16_verifier(TestCase memory network)
         public
     {
@@ -25,7 +24,6 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         getRouterData().router.getVerifier({selector: RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR});
     }
 
-    // forge-lint: disable-next-line(mixed-case-function)
     function tableNetworksTest_SupportedNetworks_the_groth16_verifier_is_not_stopped(TestCase memory network) public {
         uint256 chainId = vm.createFork(network.name);
         vm.selectFork(chainId);
