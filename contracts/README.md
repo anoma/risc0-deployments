@@ -79,9 +79,9 @@ As a prerequisite, install the
 To run the linters and static analyzer, run
 
 ```sh
-forge lint --deny notes && \
-bunx solhint --config .solhint.json 'src/**/*.sol' && \
-bunx solhint --config .solhint.other.json 'script/**/*.sol' 'test/**/*.sol' && \
+forge lint --deny notes --report-unused-suppressions && \
+bunx solhint --max-warnings 0 --config .solhint.json 'src/**/*.sol' && \
+bunx solhint --max-warnings 0 --config .solhint.other.json 'script/**/*.sol' 'test/**/*.sol' && \
 slither .
 ```
 

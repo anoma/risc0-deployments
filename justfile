@@ -25,10 +25,10 @@ contracts-build *args:
 
 # Lint contracts: forge lint, then solhint for the rules that forge lint lacks
 contracts-lint:
-    cd contracts && forge lint --deny notes
-    cd contracts && bunx --bun solhint --config .solhint.json 'src/**/*.sol'
-    cd contracts && bunx --bun solhint --config .solhint.other.json 'test/**/*.sol'
-    cd contracts && bunx --bun solhint --config .solhint.other.json 'script/**/*.sol'
+    cd contracts && forge lint --deny notes --report-unused-suppressions
+    cd contracts && bunx --bun solhint --max-warnings 0 --config .solhint.json 'src/**/*.sol'
+    cd contracts && bunx --bun solhint --max-warnings 0 --config .solhint.other.json 'test/**/*.sol'
+    cd contracts && bunx --bun solhint --max-warnings 0 --config .solhint.other.json 'script/**/*.sol'
 
 # Run slither on contracts
 contracts-static-analysis:
