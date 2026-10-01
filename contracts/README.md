@@ -92,7 +92,8 @@ slither .
 To regenerate the Rust bindings (see the [forge bind](https://getfoundry.sh/forge/reference/bind/) documentation), run
 
 ```sh
-forge bind \
+forge clean && forge build && forge bind \
+  --skip-build \
   --select '^(RiscZeroGroth16Verifier|RiscZeroMockVerifier|RiscZeroVerifierEmergencyStop|RiscZeroVerifierRouter)$' \
   --bindings-path ../bindings/src/generated/ \
   --module \
