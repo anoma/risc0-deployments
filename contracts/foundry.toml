@@ -24,6 +24,9 @@ ignored_warnings_from = [
     "dependencies/risc0-risc0-ethereum-3.0.1/contracts/src", # Warning 9170: Comparison of variables of contract type is deprecated
 ]
 
+[lint]
+severity = ["high", "medium", "low", "info", "gas", "code-size"] # The default leaves out info, gas, and code-size.
+
 [dependencies]
 "forge-std" = "1.17.0"
 "risc0-risc0-ethereum" = "3.0.1"
