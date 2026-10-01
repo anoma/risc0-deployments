@@ -73,7 +73,7 @@ and for the **bindings** package:
 
 - [ ] Run `just contracts-build`
 
-- [ ] Run the test suite with `just contracts-test`
+- [ ] Run the test suite with `just contracts-test`. The tests fork every supported network to check its router and Groth16 verifier, so CI does not run them.
 
 ### 3. Deploy and Verify the RISC Zero Contracts
 
