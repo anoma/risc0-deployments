@@ -72,6 +72,24 @@ contracts-deploy deployer admin guardian chain *args:
         --sig "run(address,address)" {{admin}} {{guardian}} \
         --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
 
+# Simulate the deployment of a verifier for an existing router (dry-run)
+contracts-simulate-verifier guardian chain *args:
+    @echo "Cleaning contracts to ensure reproducible build..."
+    @just contracts-clean
+    cd contracts && forge script \
+        script/DeployRiscZeroVerifier.s.sol:DeployRiscZeroVerifier \
+        --sig "run(address)" {{guardian}} \
+        --rpc-url {{chain}} {{ args }}
+
+# Deploy a verifier and its emergency stop for an existing router (groth16 + emergency stop)
+contracts-deploy-verifier deployer guardian chain *args:
+    @echo "Cleaning contracts to ensure reproducible build..."
+    @just contracts-clean
+    cd contracts && forge script \
+        script/DeployRiscZeroVerifier.s.sol:DeployRiscZeroVerifier \
+        --sig "run(address)" {{guardian}} \
+        --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
+
 # Verify RISC Zero contracts on Sourcify
 contracts-verify-sourcify groth16 estop router chain *args:
     cd contracts && env -u ETHERSCAN_API_KEY \
