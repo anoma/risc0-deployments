@@ -144,6 +144,66 @@ For each chain, you want to deploy to, do the following:
 
   and check the resulting `.zip` file. If everything is correct, remove the `--dry-run` flag and publish the package.
 
+## Adding a Verifier to a Router
+
+When `risc0-ethereum` releases a Groth16 verifier with a new selector, add it to each router that [`SupportedNetworks.sol`](./contracts/src/SupportedNetworks.sol) marks with `isAnomaDeployed`. RISC Zero adds it to its own routers.
+
+The PA Safe `0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10` owns these routers and guards their emergency stops. BSC testnet is the exception: the PA Safe does not exist there.
+
+### 1. Prerequisites
+
+- [ ] Move to the new `risc0-ethereum` version in `contracts/foundry.toml`, and set the new selector in [`RiscZeroVerifierSelectors.sol`](./contracts/src/RiscZeroVerifierSelectors.sol). `just contracts-test` checks that the selector matches the verifier.
+
+- [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN`. The guardian is the PA Safe. On BSC testnet, it is the guardian of the previous emergency stop.
+
+### 2. Deploy and Verify the Verifier
+
+For each chain, do the following:
+
+- [ ] Export the router of the chain from `SupportedNetworks.sol`
+
+  ```sh
+  export ROUTER=<ROUTER_CONTRACT_ADDRESS>
+  ```
+
+- [ ] **Simulate** the deployment by running
+
+  ```sh
+  just contracts-simulate-verifier $GUARDIAN <CHAIN_NAME>
+  ```
+
+- [ ] After a successful simulation, **deploy** the verifier and its emergency stop by running
+
+  ```sh
+  just contracts-deploy-verifier deployer $GUARDIAN <CHAIN_NAME>
+  ```
+
+- [ ] Export `GROTH16` and `ESTOP`, and verify the contracts as in [Deploy and Verify the RISC Zero Contracts](#3-deploy-and-verify-the-risc-zero-contracts).
+
+### 3. Add the Verifier to the Router
+
+- [ ] The router owner sends `addVerifier(<SELECTOR>, $ESTOP)` to `$ROUTER`.
+
+- [ ] Check that the router returns the new emergency stop
+
+  ```sh
+  cast call $ROUTER "getVerifier(bytes4)(address)" <SELECTOR> --rpc-url <CHAIN_NAME>
+  ```
+
+- [ ] Run `just contracts-test`. It forks all supported networks except Monad and Monad testnet, so check those two with the `cast call` above.
+
+### 4. Stop the Previous Verifier
+
+- [ ] After the protocol adapters of the chain use the new selector, the guardian calls `estop()` on the emergency stop of the previous verifier. Each contract that still uses the previous selector then stops too.
+
+- [ ] Keep the previous selector in the router, and do not call `removeVerifier`. The legacy protocol adapter reads the stop state of its verifier through the router, and this read reverts for a removed selector.
+
+### 5. Release
+
+- [ ] Merge the work, create a GitHub release, and publish the contracts package as in steps 5 and 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts).
+
+- [ ] Release the bindings.
+
 ## Releasing the Bindings
 
 ### 1. Prerequisites
