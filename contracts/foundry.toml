@@ -12,7 +12,7 @@ src = "src"
 test = "test"
 out = "out"
 script = "script"
-fs_permissions = [{ access = "read", path = "./" }]
+fs_permissions = [{ access = "read", path = "./" }, { access = "read-write", path = "./safe-payloads" }]
 libs = ["dependencies"]
 auto_detect_remappings = false
 remappings = [

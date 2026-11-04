@@ -90,6 +90,14 @@ contracts-deploy-verifier deployer guardian chain *args:
         --sig "run(address)" {{guardian}} \
         --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
 
+# Check an emergency stop and write the `addVerifier` call of the PA Safe to a Transaction Builder file in
+# `contracts/safe-payloads/`. Sends nothing.
+contracts-add-verifier-payload estop chain *args:
+    cd contracts && forge script \
+        script/GenerateAddVerifierPayload.s.sol:GenerateAddVerifierPayload \
+        --sig "run(address)" {{estop}} \
+        --rpc-url {{chain}} {{ args }}
+
 # Verify RISC Zero contracts on Sourcify
 contracts-verify-sourcify groth16 estop router chain *args:
     cd contracts && env -u ETHERSCAN_API_KEY \

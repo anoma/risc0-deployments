@@ -1,3 +1,4 @@
 .env
 justfile
 RELEASE_CHECKLIST.md
+safe-payloads/

@@ -182,7 +182,21 @@ For each chain, do the following:
 
 ### 3. Add the Verifier to the Router
 
-- [ ] The router owner sends `addVerifier(<SELECTOR>, $ESTOP)` to `$ROUTER`.
+- [ ] Write the `addVerifier(<SELECTOR>, $ESTOP)` call of the PA Safe to a batch file of the Safe Transaction Builder by running
+
+  ```sh
+  just contracts-add-verifier-payload $ESTOP <CHAIN_NAME>
+  ```
+
+  The script checks that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. It writes `contracts/safe-payloads/addVerifier_to_riscZeroVerifierRouter_<CHAIN_NAME>.json` and sends nothing.
+
+- [ ] Commit the batch file. A signer of the PA Safe imports it into the Transaction Builder of the Safe app, which checks its checksum. The signers of the PA Safe then sign and execute the transaction.
+
+- [ ] On BSC testnet, the script reverts with `RouterOwnerNotPaSafe`. There, the router owner sends the call
+
+  ```sh
+  cast send $ROUTER "addVerifier(bytes4,address)" <SELECTOR> $ESTOP --rpc-url bsc-testnet --account <ROUTER_OWNER_ACCOUNT>
+  ```
 
 - [ ] Check that the router returns the new emergency stop
 
