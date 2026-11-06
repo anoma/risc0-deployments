@@ -182,7 +182,29 @@ For each chain, do the following:
 
 ### 3. Add the Verifier to the Router
 
-- [ ] The router owner sends `addVerifier(<SELECTOR>, $ESTOP)` to `$ROUTER`.
+- [ ] **Simulate** the proposal by running
+
+  ```sh
+  just contracts-simulate-add-verifier-proposal $ESTOP <PROPOSER_ADDRESS> <CHAIN_NAME>
+  ```
+
+  The script checks that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. Then it simulates the PA Safe executing the `addVerifier(<SELECTOR>, $ESTOP)` call at its current nonce, and prints this nonce.
+
+- [ ] Check in the Safe app that no queued transaction of the PA Safe on the chain has this nonce. The script proposes at the current nonce, so a queued transaction with this nonce conflicts with the proposal, and the signers can execute only one of them.
+
+- [ ] After a successful simulation, **propose** the call to the PA Safe by running
+
+  ```sh
+  just contracts-propose-add-verifier deployer $ESTOP <PROPOSER_ADDRESS> <CHAIN_NAME>
+  ```
+
+  `<PROPOSER_ADDRESS>` is the address of the `deployer` account, which must be a signer or a delegate of the PA Safe. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
+
+- [ ] On BSC testnet, the script reverts with `RouterOwnerNotPaSafe`. There, the router owner sends the call
+
+  ```sh
+  cast send $ROUTER "addVerifier(bytes4,address)" <SELECTOR> $ESTOP --rpc-url bsc-testnet --account <ROUTER_OWNER_ACCOUNT>
+  ```
 
 - [ ] Check that the router returns the new emergency stop
 
