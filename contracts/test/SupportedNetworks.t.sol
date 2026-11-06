@@ -41,8 +41,9 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         );
     }
 
+    // Leaves out Monad and Monad testnet: their forks need the Monad EVM (`--network monad`), which cannot fork the others.
     function fixtureNetwork() public pure returns (TestCase[] memory network) {
-        network = new TestCase[](10);
+        network = new TestCase[](14);
         network[0] = TestCase({name: "sepolia"});
         network[1] = TestCase({name: "mainnet"});
 
@@ -57,6 +58,12 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
 
         network[8] = TestCase({name: "bsc-testnet"});
         network[9] = TestCase({name: "bsc"});
+
+        network[10] = TestCase({name: "tempo-moderato"});
+        network[11] = TestCase({name: "tempo"});
+
+        network[12] = TestCase({name: "stable-mainnet"});
+        network[13] = TestCase({name: "megaeth"});
 
         return network;
     }
