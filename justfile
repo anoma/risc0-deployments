@@ -90,6 +90,21 @@ contracts-deploy-verifier deployer guardian chain *args:
         --sig "run(address)" {{guardian}} \
         --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
 
+# Simulate the `addVerifier` proposal (dry-run): checks the emergency stop and simulates the PA Safe executing the call
+contracts-simulate-add-verifier-proposal estop proposer chain *args:
+    cd contracts && forge script \
+        script/ProposeAddVerifier.s.sol:ProposeAddVerifier \
+        --sig "run(address,address)" {{estop}} {{proposer}} \
+        --rpc-url {{chain}} {{ args }}
+
+# Propose adding the verifier behind an emergency stop to the router to the PA Safe (proposer = unlocked deployer).
+# The Safe Transaction Service request runs through `curl`, so the recipe needs `--ffi`.
+contracts-propose-add-verifier deployer estop proposer chain *args:
+    cd contracts && forge script \
+        script/ProposeAddVerifier.s.sol:ProposeAddVerifier \
+        --sig "run(address,address)" {{estop}} {{proposer}} \
+        --broadcast --ffi --rpc-url {{chain}} --account {{deployer}} {{ args }}
+
 # Verify RISC Zero contracts on Sourcify
 contracts-verify-sourcify groth16 estop router chain *args:
     cd contracts && env -u ETHERSCAN_API_KEY \
