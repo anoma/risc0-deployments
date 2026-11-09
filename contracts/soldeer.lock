@@ -13,3 +13,15 @@ version = "3.0.1"
 url = "https://soldeer-revisions.s3.amazonaws.com/risc0-risc0-ethereum/3_0_1_09-11-2025_11:23:36_risc0-risc0-ethereum-3.0.zip"
 checksum = "894cb1442a71fcbef5f7e8984aab7e1cb3079ee8876a080926f0c66e07e50e58"
 integrity = "a5f84cd6aa123ced3c8197074915418abe6f54bef2cbcc4d83d4b76968d82936"
+
+[[dependencies]]
+name = "safe-smart-account"
+version = "1.5.0"
+git = "https://github.com/safe-global/safe-smart-account.git"
+rev = "dc437e8fba8b4805d76bcbd1c668c9fd3d1e83be"
+
+[[dependencies]]
+name = "safe-utils"
+version = "0.0.24"
+git = "https://github.com/Recon-Fuzz/safe-utils.git"
+rev = "637e04202bb9bb879803f6b42137e2d5d035fbe0"
