@@ -154,7 +154,7 @@ The PA Safe `0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10` owns these routers and 
 
 - [ ] Move to the new `risc0-ethereum` version in `contracts/foundry.toml`, and set the new selector in [`RiscZeroVerifierSelectors.sol`](./contracts/src/RiscZeroVerifierSelectors.sol). `just contracts-test` checks that the selector matches the verifier.
 
-- [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN`. The guardian is the PA Safe.
+- [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN` and `GUARDIAN`. Import the deployment wallet of [`Parameters.sol`](./contracts/script/Parameters.sol) as `deployer`: the deploy script deploys from it and makes the PA Safe the guardian.
 
 ### 2. Deploy and Verify the Verifier
 
@@ -169,14 +169,16 @@ For each chain, do the following:
 - [ ] **Simulate** the deployment by running
 
   ```sh
-  just contracts-simulate-verifier $GUARDIAN <CHAIN_NAME>
+  just contracts-simulate-verifier <CHAIN_NAME>
   ```
 
 - [ ] After a successful simulation, **deploy** the verifier and its emergency stop by running
 
   ```sh
-  just contracts-deploy-verifier deployer $GUARDIAN <CHAIN_NAME>
+  just contracts-deploy-verifier deployer <CHAIN_NAME>
   ```
+
+  If `deployer` is not the deployment wallet, forge stops before it sends a transaction.
 
 - [ ] Export `GROTH16` and `ESTOP`, and verify the contracts as in [Deploy and Verify the RISC Zero Contracts](#3-deploy-and-verify-the-risc-zero-contracts).
 
@@ -185,20 +187,20 @@ For each chain, do the following:
 - [ ] **Simulate** the proposal by running
 
   ```sh
-  just contracts-simulate-add-verifier-proposal $ESTOP <PROPOSER_ADDRESS> <CHAIN_NAME>
+  just contracts-simulate-add-verifier-proposal $ESTOP <CHAIN_NAME>
   ```
 
-  The script checks that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. Then it simulates the PA Safe executing the `addVerifier(<SELECTOR>, $ESTOP)` call at its current nonce, and prints this nonce.
+  The script reads the router of the chain from `SupportedNetworks.sol`. It checks that Anoma deployed the router (`isAnomaDeployed`), that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. Then it simulates the PA Safe executing the `addVerifier(<SELECTOR>, $ESTOP)` call at its current nonce, and prints this nonce.
 
 - [ ] Check in the Safe app that no queued transaction of the PA Safe on the chain has this nonce. The script proposes at the current nonce, so a queued transaction with this nonce conflicts with the proposal, and the signers can execute only one of them.
 
 - [ ] After a successful simulation, **propose** the call to the PA Safe by running
 
   ```sh
-  just contracts-propose-add-verifier deployer $ESTOP <PROPOSER_ADDRESS> <CHAIN_NAME>
+  just contracts-propose-add-verifier deployer $ESTOP <CHAIN_NAME>
   ```
 
-  `<PROPOSER_ADDRESS>` is the address of the `deployer` account, which must be a signer or a delegate of the PA Safe. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
+  `deployer` must be the account of the deployment wallet in [`Parameters.sol`](./contracts/script/Parameters.sol), which proposes the call. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
 
 - [ ] Check that the router returns the new emergency stop
 
