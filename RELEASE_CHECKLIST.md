@@ -73,7 +73,7 @@ and for the **bindings** package:
 
 - [ ] Run `just contracts-build`
 
-- [ ] Run the test suite with `just contracts-test`. The tests call the router of every supported network through Alchemy, so CI does not run them.
+- [ ] Run the test suite with `just contracts-test`.
 
 ### 3. Deploy and Verify the RISC Zero Contracts
 
