@@ -127,24 +127,10 @@ Append the
 
 #### Block Explorer Verification
 
-The verifier contracts live in the `risc0-ethereum` dependency, so verification references their source paths. For post-deployment verification of the Groth16 verifier on **Sourcify** run
+The verifier contracts live in the `risc0-ethereum` dependency, so verification references their source paths, which the justfile in the repository root names. From the repository root, verify a deployment on **Sourcify** and **Etherscan** (requires `ETHERSCAN_API_KEY`) with
 
 ```sh
-forge verify-contract \
-   <ADDRESS> \
-   dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
-   --chain sepolia \
-   --verifier sourcify
+just contracts-verify-deployment <GROTH16_ADDRESS> <ESTOP_ADDRESS> <ROUTER_ADDRESS> sepolia
 ```
 
-For **Etherscan** (requires `ETHERSCAN_API_KEY`) run
-
-```sh
-forge verify-contract \
-   <ADDRESS> \
-   dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
-   --chain sepolia \
-   --verifier etherscan
-```
-
-Repeat for the `RiscZeroVerifierEmergencyStop` and `RiscZeroVerifierRouter` contracts (see the [Release Checklist](../RELEASE_CHECKLIST.md) for the full set of commands).
+and a new Groth16 verifier and its emergency stop for an existing router with `just contracts-verify-verifier <GROTH16_ADDRESS> <ESTOP_ADDRESS> <CHAIN_NAME>`. The Etherscan recipe reads the constructor arguments from the creation transaction. For chains that Etherscan does not serve, see the [Release Checklist](../RELEASE_CHECKLIST.md).
