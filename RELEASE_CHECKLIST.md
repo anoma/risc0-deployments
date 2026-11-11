@@ -115,7 +115,7 @@ For each chain, you want to deploy to, do the following:
   - [ ] custom explorers
 
     ```sh
-        just contracts-verify-custom $GROTH16 $ESTOP $ROUTER <VERIFIER_URL> <CHAIN>
+    just contracts-verify-custom $GROTH16 $ESTOP $ROUTER <CHAIN> <VERIFIER_URL>
     ```
 
     and check that the verification worked (e.g., on https://sourcify.dev/#/lookup).
