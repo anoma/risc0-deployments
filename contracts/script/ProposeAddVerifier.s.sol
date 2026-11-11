@@ -2,11 +2,11 @@
 pragma solidity ^0.8.23;
 
 import {Script} from "forge-std-1.17.0/src/Script.sol";
-import {IRiscZeroSelectable} from "risc0-risc0-ethereum-3.0.1/contracts/src/IRiscZeroSelectable.sol";
+import {IRiscZeroSelectable} from "risc0-risc0-ethereum-3.1.0/contracts/src/IRiscZeroSelectable.sol";
 import {
     RiscZeroVerifierEmergencyStop
-} from "risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol";
-import {RiscZeroVerifierRouter} from "risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol";
+} from "risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierEmergencyStop.sol";
+import {RiscZeroVerifierRouter} from "risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierRouter.sol";
 import {IOwnerManager} from "safe-smart-account-1.5.0/contracts/interfaces/IOwnerManager.sol";
 import {Safe} from "safe-utils-0.0.24/src/Safe.sol";
 

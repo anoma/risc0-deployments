@@ -132,7 +132,7 @@ The verifier contracts live in the `risc0-ethereum` dependency, so verification 
 ```sh
 forge verify-contract \
    <ADDRESS> \
-   dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
+   dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
    --chain sepolia \
    --verifier sourcify
 ```
@@ -142,7 +142,7 @@ For **Etherscan** (requires `ETHERSCAN_API_KEY`) run
 ```sh
 forge verify-contract \
    <ADDRESS> \
-   dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
+   dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
    --chain sepolia \
    --verifier etherscan
 ```

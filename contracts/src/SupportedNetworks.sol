@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
-import {RiscZeroVerifierRouter} from "risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol";
+import {RiscZeroVerifierRouter} from "risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierRouter.sol";
 
 /// @title SupportedNetworks
 /// @author Anoma Foundation, 2025
@@ -24,7 +24,7 @@ contract SupportedNetworks {
     error UnsupportedNetwork(uint256 chainId);
 
     /// @notice Initializes the supported networks and associated RISC Zero verifier router addresses
-    /// (see https://dev.risczero.com/api/3.0/blockchain-integration/contracts/verifier).
+    /// (see https://dev.risczero.com/api/3.1/blockchain-integration/contracts/verifier).
     // NOTE: A repeated address is a separate router on each network, not a shared value.
     // forge-lint: disable-next-item(literal-instead-of-constant)
     constructor() {
@@ -150,7 +150,7 @@ contract SupportedNetworks {
     /// @param name The network name.
     /// @param chainId The chain ID of the network.
     /// @param riscZeroVerifierRouter The RISC Zero verifier router address obtained from
-    /// https://dev.risczero.com/api/3.0/blockchain-integration/contracts/verifier.
+    /// https://dev.risczero.com/api/3.1/blockchain-integration/contracts/verifier.
     /// @param isAnomaDeployed Whether the RISC Zero verifier was deployed by Anoma.
     /// @dev The network `name` must match the `[rpc_endpoints]` names in the `foundry.toml` file for the test in
     /// `DeployProtocolAdapter.t.sol` to succeed.

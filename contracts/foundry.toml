@@ -19,8 +19,8 @@ auto_detect_remappings = false
 remappings = [
     "forge-std-1.17.0/=dependencies/forge-std-1.17.0/",
     "forge-std/=dependencies/forge-std-1.17.0/src/",
-    "openzeppelin/contracts/=dependencies/risc0-risc0-ethereum-3.0.1/lib/openzeppelin-contracts/contracts/",
-    "risc0-risc0-ethereum-3.0.1/=dependencies/risc0-risc0-ethereum-3.0.1/",
+    "openzeppelin/contracts/=dependencies/risc0-risc0-ethereum-3.1.0/lib/openzeppelin-contracts/contracts/",
+    "risc0-risc0-ethereum-3.1.0/=dependencies/risc0-risc0-ethereum-3.1.0/",
     "safe-smart-account-1.5.0/=dependencies/safe-smart-account-1.5.0/",
     "safe-smart-account/common/Enum.sol=dependencies/safe-smart-account-1.5.0/contracts/libraries/Enum.sol",
     "safe-smart-account/libraries/=dependencies/safe-smart-account-1.5.0/contracts/libraries/",
@@ -28,7 +28,7 @@ remappings = [
     "solidity-http/=dependencies/safe-utils-0.0.24/lib/solidity-http/src/",
 ]
 ignored_warnings_from = [
-    "dependencies/risc0-risc0-ethereum-3.0.1/contracts/src", # Warning 9170: Comparison of variables of contract type is deprecated
+    "dependencies/risc0-risc0-ethereum-3.1.0/contracts/src", # Warning 9170: Comparison of variables of contract type is deprecated
     "dependencies/safe-smart-account-1.5.0/contracts",       # Warning 6335: "error" will be promoted to keyword in the future and will not be allowed as an identifier anymore.
     "dependencies/safe-utils-0.0.24/lib/solidity-http/src/", # Warning 6335: "at" will be promoted to keyword in the future and will not be allowed as an identifier anymore.
 ]
@@ -38,7 +38,7 @@ severity = ["high", "medium", "low", "info", "gas", "code-size"] # The default l
 
 [dependencies]
 "forge-std" = "1.17.0"
-"risc0-risc0-ethereum" = "3.0.1"
+"risc0-risc0-ethereum" = { version = "3.1.0", git = "https://github.com/risc0/risc0-ethereum.git", tag = "v3.1.0" }
 "safe-smart-account" = { version = "1.5.0", git = "https://github.com/safe-global/safe-smart-account.git", tag = "v1.5.0" }
 "safe-utils" = { version = "0.0.24", git = "https://github.com/Recon-Fuzz/safe-utils.git", tag = "v0.0.24" }
 
