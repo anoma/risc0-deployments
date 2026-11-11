@@ -52,7 +52,7 @@ forge build
 
 #### Tests & Coverage
 
-The tests fork the supported networks through Alchemy, so export `ALCHEMY_API_KEY` first (see `.env-example`). To run the tests, run
+The tests call the supported networks through Alchemy, so export `ALCHEMY_API_KEY` first (see `.env-example`). To run the tests, run
 
 ```sh
 forge test
