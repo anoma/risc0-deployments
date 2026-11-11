@@ -113,6 +113,13 @@ For each chain, you want to deploy to, do the following:
 
   and the other two with `emergency_stop_contract` and `router_contract`. `just contracts-verify-custom <ADDRESS> <CONTRACT> <CHAIN_NAME> <VERIFIER_URL>` verifies a contract on another explorer.
 
+  On Tempo and Tempo Moderato, forge sends the Sourcify verification to the Sourcify server of Tempo, `https://contracts.tempo.xyz`, and sourcify.dev gets no copy. So verify each contract on sourcify.dev too, with the hash of its creation transaction from the broadcast file of the deployment. Without the hash, sourcify.dev searches for the creation transaction itself. This search fails if the same block holds a Tempo transaction of type `0x76`, and sourcify.dev then matches only the runtime bytecode. For example, for the Groth16 verifier:
+
+  ```sh
+  TX_HASH=$(jq -r --arg address $GROTH16 '.transactions[] | select((.contractAddress | ascii_downcase) == ($address | ascii_downcase)) | .hash' contracts/broadcast/*/<CHAIN_ID>/run-latest.json)
+  just contracts-verify-sourcify $GROTH16 "$(just --evaluate groth16_verifier_contract)" <CHAIN_NAME> --verifier-url https://sourcify.dev/server/ --creation-transaction-hash $TX_HASH
+  ```
+
   With the free Etherscan key, Etherscan refuses to look up the creation transaction on some chains, such as BSC. There, give the constructor arguments as hex without `0x`, for example for the emergency stop:
 
   ```sh
