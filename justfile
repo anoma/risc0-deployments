@@ -73,22 +73,21 @@ contracts-deploy deployer admin guardian chain *args:
         --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
 
 # Simulate the deployment of a verifier for an existing router (dry-run)
-contracts-simulate-verifier guardian chain *args:
+contracts-simulate-verifier chain *args:
     @echo "Cleaning contracts to ensure reproducible build..."
     @just contracts-clean
     cd contracts && forge script \
         script/DeployRiscZeroVerifier.s.sol:DeployRiscZeroVerifier \
-        --sig "run(address)" {{guardian}} \
         --rpc-url {{chain}} {{ args }}
 
-# Deploy a verifier and its emergency stop for an existing router (groth16 + emergency stop)
-contracts-deploy-verifier deployer guardian chain *args:
+# Deploy a verifier and its emergency stop for an existing router (groth16 + emergency stop). `deployer` is the account
+# of the deployment wallet in `contracts/script/Parameters.sol`, which the script deploys from.
+contracts-deploy-verifier deployer chain *args:
     @echo "Cleaning contracts to ensure reproducible build..."
     @just contracts-clean
     cd contracts && forge script \
         script/DeployRiscZeroVerifier.s.sol:DeployRiscZeroVerifier \
-        --sig "run(address)" {{guardian}} \
-        --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
+        --broadcast --rpc-url {{chain}} --account {{deployer}} {{ args }}
 
 # Simulate the `addVerifier` proposal (dry-run): checks the emergency stop and simulates the PA Safe executing the call
 contracts-simulate-add-verifier-proposal estop chain *args:

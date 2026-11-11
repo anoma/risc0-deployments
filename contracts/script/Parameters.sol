@@ -3,7 +3,8 @@ pragma solidity ^0.8.23;
 
 /// @title Parameters
 /// @author Anoma Foundation, 2026
-/// @notice The accounts of the PA Safe proposals: the Safe that receives them and the account that proposes them.
+/// @notice The accounts of the verifier scripts: the PA Safe, and the deployment wallet, which deploys the verifiers and
+/// proposes to the PA Safe.
 /// @custom:security-contact security@anoma.foundation
 library Parameters {
     /// @notice The deployment wallet, which can propose transactions to the PA Safe on every chain.
