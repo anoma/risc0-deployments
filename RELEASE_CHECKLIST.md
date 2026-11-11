@@ -113,6 +113,12 @@ For each chain, you want to deploy to, do the following:
 
   and the other two with `emergency_stop_contract` and `router_contract`. `just contracts-verify-custom <ADDRESS> <CONTRACT> <CHAIN_NAME> <VERIFIER_URL>` verifies a contract on another explorer.
 
+  With the free Etherscan key, Etherscan refuses to look up the creation transaction on some chains, such as BSC. There, give the constructor arguments as hex without `0x`, for example for the emergency stop:
+
+  ```sh
+  just contracts-verify-etherscan $ESTOP "$(just --evaluate emergency_stop_contract)" <CHAIN_NAME> --constructor-args $(cast abi-encode "constructor(address,address)" $GROTH16 $GUARDIAN | cut -c3-)
+  ```
+
 - [ ] Check the verification on https://sourcify.dev/#/lookup and on the explorer of the chain.
 
 ### 4. Ensure the Admin has Accepted the Ownership Transfer
