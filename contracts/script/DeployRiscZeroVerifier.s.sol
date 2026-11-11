@@ -10,14 +10,20 @@ import {
     RiscZeroVerifierEmergencyStop
 } from "risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierEmergencyStop.sol";
 
+import {Parameters} from "./Parameters.sol";
+
 contract DeployRiscZeroVerifier is Script {
     /// @notice Deploys the Groth16 verifier and the emergency stop of the current RISC Zero version for an existing
-    /// router.
-    /// @param guardian The address that can emergency stop the verifier.
-    function run(address guardian)
+    /// router. The PA Safe guards the emergency stop, except on BSC testnet, where `Parameters.BSC_TESTNET_GUARDIAN`
+    /// guards it.
+    function run()
         public
         returns (RiscZeroVerifierEmergencyStop emergencyStop, RiscZeroGroth16Verifier groth16Verifier)
     {
+        address guardian = block.chainid == Parameters.BSC_TESTNET_CHAIN_ID
+                ? Parameters.BSC_TESTNET_GUARDIAN
+                : Parameters.PA_MULTISIG;
+
         vm.startBroadcast(msg.sender);
 
         groth16Verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);

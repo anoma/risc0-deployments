@@ -17,9 +17,6 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         address guardian;
     }
 
-    // BSC testnet has no PA multisig.
-    address internal constant _BSC_TESTNET_GUARDIAN = 0xcD5679555424B5132E1bAbE1FD965c44BF1dDb7b;
-
     constructor() SupportedNetworks() {}
 
     function tableRiscZeroNetworksTest_SupportedNetworks_the_router_verifies_the_groth16_test_receipt(string memory riscZeroNetwork)
@@ -71,7 +68,7 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
 
     function fixtureAnomaNetwork() public pure returns (AnomaNetwork[] memory anomaNetwork) {
         anomaNetwork = new AnomaNetwork[](8);
-        anomaNetwork[0] = AnomaNetwork({name: "bsc-testnet", guardian: _BSC_TESTNET_GUARDIAN});
+        anomaNetwork[0] = AnomaNetwork({name: "bsc-testnet", guardian: Parameters.BSC_TESTNET_GUARDIAN});
         anomaNetwork[1] = AnomaNetwork({name: "bsc", guardian: Parameters.PA_MULTISIG});
         anomaNetwork[2] = AnomaNetwork({name: "tempo-moderato", guardian: Parameters.PA_MULTISIG});
         anomaNetwork[3] = AnomaNetwork({name: "tempo", guardian: Parameters.PA_MULTISIG});

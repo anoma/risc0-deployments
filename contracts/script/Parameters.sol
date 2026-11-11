@@ -3,7 +3,8 @@ pragma solidity ^0.8.23;
 
 /// @title Parameters
 /// @author Anoma Foundation, 2026
-/// @notice The accounts of the PA Safe proposals: the Safe that receives them and the account that proposes them.
+/// @notice The accounts of the verifier scripts: the PA Safe, the deployment wallet that proposes to it, and the guardian
+/// on BSC testnet, where the PA Safe does not exist.
 /// @custom:security-contact security@anoma.foundation
 library Parameters {
     /// @notice The deployment wallet, which can propose transactions to the PA Safe on every chain.
@@ -12,4 +13,10 @@ library Parameters {
     /// @notice The protocol adapter multisig, a Safe that owns the routers that Anoma deployed and guards their
     /// emergency stops, on every chain except BSC testnet.
     address internal constant PA_MULTISIG = 0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10;
+
+    /// @notice The chain ID of BSC testnet.
+    uint256 internal constant BSC_TESTNET_CHAIN_ID = 97;
+
+    /// @notice The guardian of the emergency stops on BSC testnet.
+    address internal constant BSC_TESTNET_GUARDIAN = 0xcD5679555424B5132E1bAbE1FD965c44BF1dDb7b;
 }

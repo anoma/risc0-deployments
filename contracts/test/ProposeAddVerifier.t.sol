@@ -35,7 +35,7 @@ contract ProposeAddVerifierTest is Test {
         _router = _script.getRouterData().router;
         _deployRouterAt({target: address(_router), admin: Parameters.PA_MULTISIG});
 
-        (_emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: Parameters.PA_MULTISIG});
+        (_emergencyStop,) = new DeployRiscZeroVerifier().run();
     }
 
     function test_run_adds_the_verifier_to_the_router() public {
@@ -74,7 +74,8 @@ contract ProposeAddVerifierTest is Test {
 
     function test_check_reverts_if_the_pa_safe_is_not_the_guardian() public {
         address guardian = makeAddr("guardian");
-        (RiscZeroVerifierEmergencyStop emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: guardian});
+        RiscZeroVerifierEmergencyStop emergencyStop =
+            new RiscZeroVerifierEmergencyStop({_verifier: _emergencyStop.verifier(), guardian: guardian});
 
         vm.expectRevert(abi.encodeWithSelector(ProposeAddVerifier.GuardianNotPaSafe.selector, guardian));
         _script.check({emergencyStop: emergencyStop});

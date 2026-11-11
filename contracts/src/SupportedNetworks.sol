@@ -112,7 +112,6 @@ contract SupportedNetworks {
             riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
             isAnomaDeployed: true
         });
-
         _supportNetwork({
             name: "monad",
             chainId: 143,
