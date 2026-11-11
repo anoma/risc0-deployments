@@ -14,21 +14,17 @@ import {Parameters} from "./Parameters.sol";
 
 contract DeployRiscZeroVerifier is Script {
     /// @notice Deploys the Groth16 verifier and the emergency stop of the current RISC Zero version for an existing
-    /// router from the deployment wallet. The PA Safe guards the emergency stop, except on BSC testnet, where the
-    /// deployment wallet owns the router and guards it.
+    /// router from the deployment wallet. The PA Safe guards the emergency stop.
     function run()
         public
         returns (RiscZeroVerifierEmergencyStop emergencyStop, RiscZeroGroth16Verifier groth16Verifier)
     {
-        address guardian = block.chainid == Parameters.BSC_TESTNET_CHAIN_ID
-                ? Parameters.DEPLOYMENT_WALLET
-                : Parameters.PA_MULTISIG;
-
         vm.startBroadcast(Parameters.DEPLOYMENT_WALLET);
 
         groth16Verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
 
-        emergencyStop = new RiscZeroVerifierEmergencyStop({_verifier: groth16Verifier, guardian: guardian});
+        emergencyStop =
+            new RiscZeroVerifierEmergencyStop({_verifier: groth16Verifier, guardian: Parameters.PA_MULTISIG});
 
         vm.stopBroadcast();
     }

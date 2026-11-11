@@ -12,11 +12,6 @@ import {SupportedNetworks} from "../src/SupportedNetworks.sol";
 
 // The node of each network runs the calls, because forge cannot fork Monad and the other networks in one run.
 contract SupportedNetworksTest is SupportedNetworks, Test {
-    struct AnomaNetwork {
-        string name;
-        address guardian;
-    }
-
     constructor() SupportedNetworks() {}
 
     function tableRiscZeroNetworksTest_SupportedNetworks_the_router_verifies_the_groth16_test_receipt(string memory riscZeroNetwork)
@@ -26,20 +21,20 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         _verifyTheTestReceipt({network: riscZeroNetwork});
     }
 
-    function tableAnomaNetworksTest_SupportedNetworks_the_router_verifies_the_groth16_test_receipt(AnomaNetwork memory anomaNetwork)
+    function tableAnomaNetworksTest_SupportedNetworks_the_router_verifies_the_groth16_test_receipt(string memory anomaNetwork)
         public
     {
-        assertTrue(_riscZeroVerifierRouters[anomaNetwork.name].isAnomaDeployed, "Anoma deployed the router");
-        _verifyTheTestReceipt({network: anomaNetwork.name});
+        assertTrue(_riscZeroVerifierRouters[anomaNetwork].isAnomaDeployed, "Anoma deployed the router");
+        _verifyTheTestReceipt({network: anomaNetwork});
     }
 
-    function tableAnomaNetworksTest_SupportedNetworks_the_guardian_owns_the_emergency_stop_of_the_groth16_verifier(AnomaNetwork memory anomaNetwork)
+    function tableAnomaNetworksTest_SupportedNetworks_the_pa_safe_guards_the_emergency_stop_of_the_groth16_verifier(string memory anomaNetwork)
         public
     {
         address emergencyStop = abi.decode(
             _call({
-                network: anomaNetwork.name,
-                target: _router({network: anomaNetwork.name}),
+                network: anomaNetwork,
+                target: _router({network: anomaNetwork}),
                 // `getVerifier` has two overloads, so `abi.encodeCall` cannot name it.
                 data: abi.encodeWithSignature(
                     "getVerifier(bytes4)", RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR
@@ -48,10 +43,9 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
             (address)
         );
         address guardian = abi.decode(
-            _call({network: anomaNetwork.name, target: emergencyStop, data: abi.encodeCall(Ownable.owner, ())}),
-            (address)
+            _call({network: anomaNetwork, target: emergencyStop, data: abi.encodeCall(Ownable.owner, ())}), (address)
         );
-        assertEq(guardian, anomaNetwork.guardian, "The guardian of the network owns the emergency stop");
+        assertEq(guardian, Parameters.PA_MULTISIG, "The PA Safe guards the emergency stop");
     }
 
     function fixtureRiscZeroNetwork() public pure returns (string[] memory riscZeroNetwork) {
@@ -66,16 +60,15 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
         riscZeroNetwork[7] = "optimism";
     }
 
-    function fixtureAnomaNetwork() public pure returns (AnomaNetwork[] memory anomaNetwork) {
-        anomaNetwork = new AnomaNetwork[](8);
-        anomaNetwork[0] = AnomaNetwork({name: "bsc-testnet", guardian: Parameters.DEPLOYMENT_WALLET});
-        anomaNetwork[1] = AnomaNetwork({name: "bsc", guardian: Parameters.PA_MULTISIG});
-        anomaNetwork[2] = AnomaNetwork({name: "tempo-moderato", guardian: Parameters.PA_MULTISIG});
-        anomaNetwork[3] = AnomaNetwork({name: "tempo", guardian: Parameters.PA_MULTISIG});
-        anomaNetwork[4] = AnomaNetwork({name: "monad-testnet", guardian: Parameters.PA_MULTISIG});
-        anomaNetwork[5] = AnomaNetwork({name: "monad", guardian: Parameters.PA_MULTISIG});
-        anomaNetwork[6] = AnomaNetwork({name: "stable-mainnet", guardian: Parameters.PA_MULTISIG});
-        anomaNetwork[7] = AnomaNetwork({name: "megaeth", guardian: Parameters.PA_MULTISIG});
+    function fixtureAnomaNetwork() public pure returns (string[] memory anomaNetwork) {
+        anomaNetwork = new string[](7);
+        anomaNetwork[0] = "bsc";
+        anomaNetwork[1] = "tempo-moderato";
+        anomaNetwork[2] = "tempo";
+        anomaNetwork[3] = "monad-testnet";
+        anomaNetwork[4] = "monad";
+        anomaNetwork[5] = "stable-mainnet";
+        anomaNetwork[6] = "megaeth";
     }
 
     function _verifyTheTestReceipt(string memory network) internal {
