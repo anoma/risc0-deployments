@@ -54,14 +54,14 @@ contract ProposeAddVerifier is Script, SupportedNetworks {
             RiscZeroVerifierRouter.addVerifier, (RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR, emergencyStop)
         );
 
-        _safe.initialize(Parameters.PA_SAFE);
+        _safe.initialize(Parameters.PA_MULTISIG);
 
         if (Safe.isBroadcastMode()) {
             _safe.proposeTransaction(address(router), callData, Parameters.DEPLOYMENT_WALLET);
         } else {
             require(
                 _safe.simulateTransactionMultiSigNoSign(
-                    address(router), callData, IOwnerManager(Parameters.PA_SAFE).getOwners()
+                    address(router), callData, IOwnerManager(Parameters.PA_MULTISIG).getOwners()
                 ),
                 TransactionSimulationFailed()
             );
@@ -78,10 +78,10 @@ contract ProposeAddVerifier is Script, SupportedNetworks {
         router = routerData.router;
 
         address routerOwner = router.owner();
-        require(routerOwner == Parameters.PA_SAFE, RouterOwnerNotPaSafe(routerOwner));
+        require(routerOwner == Parameters.PA_MULTISIG, RouterOwnerNotPaSafe(routerOwner));
 
         address guardian = emergencyStop.owner();
-        require(guardian == Parameters.PA_SAFE, GuardianNotPaSafe(guardian));
+        require(guardian == Parameters.PA_MULTISIG, GuardianNotPaSafe(guardian));
 
         bytes4 selector = IRiscZeroSelectable(address(emergencyStop.verifier())).SELECTOR();
         require(

@@ -30,12 +30,12 @@ contract ProposeAddVerifierTest is Test {
         vm.chainId(56);
 
         _script = new ProposeAddVerifier();
-        _deploySafeAt(Parameters.PA_SAFE);
+        _deploySafeAt(Parameters.PA_MULTISIG);
 
         _router = _script.getRouterData().router;
-        _deployRouterAt({target: address(_router), admin: Parameters.PA_SAFE});
+        _deployRouterAt({target: address(_router), admin: Parameters.PA_MULTISIG});
 
-        (_emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: Parameters.PA_SAFE});
+        (_emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: Parameters.PA_MULTISIG});
     }
 
     function test_run_adds_the_verifier_to_the_router() public {
@@ -48,7 +48,7 @@ contract ProposeAddVerifierTest is Test {
 
     function test_run_reverts_if_the_simulated_call_fails() public {
         // The router rejects a selector that it has already, so the simulated execution fails.
-        vm.prank(Parameters.PA_SAFE);
+        vm.prank(Parameters.PA_MULTISIG);
         _router.addVerifier({selector: RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR, verifier: _emergencyStop});
 
         vm.expectRevert(ProposeAddVerifier.TransactionSimulationFailed.selector);
@@ -84,7 +84,7 @@ contract ProposeAddVerifierTest is Test {
         bytes4 expected = RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR;
         bytes4 selector = ~expected;
         RiscZeroVerifierEmergencyStop emergencyStop = new RiscZeroVerifierEmergencyStop({
-            _verifier: new RiscZeroMockVerifier(selector), guardian: Parameters.PA_SAFE
+            _verifier: new RiscZeroMockVerifier(selector), guardian: Parameters.PA_MULTISIG
         });
 
         vm.expectRevert(
