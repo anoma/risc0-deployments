@@ -11,6 +11,7 @@ import {SafeProxy} from "safe-smart-account-1.5.0/contracts/proxies/SafeProxy.so
 import {SafeL2} from "safe-smart-account-1.5.0/contracts/SafeL2.sol";
 
 import {DeployRiscZeroVerifier} from "../script/DeployRiscZeroVerifier.s.sol";
+import {Parameters} from "../script/Parameters.sol";
 import {ProposeAddVerifier} from "../script/ProposeAddVerifier.s.sol";
 import {RiscZeroVerifierSelectors} from "../src/RiscZeroVerifierSelectors.sol";
 
@@ -18,8 +19,6 @@ import {RiscZeroVerifierSelectors} from "../src/RiscZeroVerifierSelectors.sol";
 /// the verifier.
 contract ProposeAddVerifierTest is Test {
     ProposeAddVerifier internal _script;
-    address internal _paSafe;
-    address internal _proposer;
     RiscZeroVerifierRouter internal _router;
     RiscZeroVerifierEmergencyStop internal _emergencyStop;
 
@@ -31,17 +30,16 @@ contract ProposeAddVerifierTest is Test {
         vm.chainId(56);
 
         _script = new ProposeAddVerifier();
-        _paSafe = _script.PA_SAFE();
-        _proposer = _deploySafeAt(_paSafe);
+        _deploySafeAt(Parameters.PA_SAFE);
 
         _router = _script.getRouterData().router;
-        _deployRouterAt({target: address(_router), admin: _paSafe});
+        _deployRouterAt({target: address(_router), admin: Parameters.PA_SAFE});
 
-        (_emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: _paSafe});
+        (_emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: Parameters.PA_SAFE});
     }
 
     function test_run_adds_the_verifier_to_the_router() public {
-        _script.run({emergencyStop: _emergencyStop, proposer: _proposer});
+        _script.run({emergencyStop: _emergencyStop});
 
         assertEq(
             address(_router.getVerifier(RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR)), address(_emergencyStop)
@@ -50,19 +48,28 @@ contract ProposeAddVerifierTest is Test {
 
     function test_run_reverts_if_the_simulated_call_fails() public {
         // The router rejects a selector that it has already, so the simulated execution fails.
-        vm.prank(_paSafe);
+        vm.prank(Parameters.PA_SAFE);
         _router.addVerifier({selector: RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR, verifier: _emergencyStop});
 
         vm.expectRevert(ProposeAddVerifier.TransactionSimulationFailed.selector);
-        _script.run({emergencyStop: _emergencyStop, proposer: _proposer});
+        _script.run({emergencyStop: _emergencyStop});
+    }
+
+    function test_check_reverts_if_anoma_did_not_deploy_the_router() public {
+        // Sepolia, where RISC Zero deployed the router.
+        vm.chainId(11155111);
+        assertFalse(_script.getRouterData().isAnomaDeployed, "Anoma did not deploy the router on Sepolia");
+
+        vm.expectRevert(abi.encodeWithSelector(ProposeAddVerifier.RouterNotAnomaDeployed.selector, block.chainid));
+        _script.check({emergencyStop: _emergencyStop});
     }
 
     function test_check_reverts_if_the_pa_safe_does_not_own_the_router() public {
         address deployer = makeAddr("deployer");
-        RiscZeroVerifierRouter router = new RiscZeroVerifierRouter({admin: deployer});
+        _deployRouterAt({target: address(_router), admin: deployer});
 
         vm.expectRevert(abi.encodeWithSelector(ProposeAddVerifier.RouterOwnerNotPaSafe.selector, deployer));
-        _script.check({router: router, emergencyStop: _emergencyStop});
+        _script.check({emergencyStop: _emergencyStop});
     }
 
     function test_check_reverts_if_the_pa_safe_is_not_the_guardian() public {
@@ -70,23 +77,24 @@ contract ProposeAddVerifierTest is Test {
         (RiscZeroVerifierEmergencyStop emergencyStop,) = new DeployRiscZeroVerifier().run({guardian: guardian});
 
         vm.expectRevert(abi.encodeWithSelector(ProposeAddVerifier.GuardianNotPaSafe.selector, guardian));
-        _script.check({router: _router, emergencyStop: emergencyStop});
+        _script.check({emergencyStop: emergencyStop});
     }
 
     function test_check_reverts_if_the_verifier_has_another_selector() public {
         bytes4 expected = RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR;
         bytes4 selector = ~expected;
-        RiscZeroVerifierEmergencyStop emergencyStop =
-            new RiscZeroVerifierEmergencyStop({_verifier: new RiscZeroMockVerifier(selector), guardian: _paSafe});
+        RiscZeroVerifierEmergencyStop emergencyStop = new RiscZeroVerifierEmergencyStop({
+            _verifier: new RiscZeroMockVerifier(selector), guardian: Parameters.PA_SAFE
+        });
 
         vm.expectRevert(
             abi.encodeWithSelector(ProposeAddVerifier.VerifierSelectorMismatch.selector, expected, selector)
         );
-        _script.check({router: _router, emergencyStop: emergencyStop});
+        _script.check({emergencyStop: emergencyStop});
     }
 
     /// @notice Installs a Safe 1.5.0 with three of five owners, as the PA Safe has, at the target address.
-    function _deploySafeAt(address target) internal returns (address firstOwner) {
+    function _deploySafeAt(address target) internal {
         address[] memory owners = new address[](5);
         for (uint256 i = 0; i < owners.length; ++i) {
             owners[i] = makeAddr(string.concat("owner ", vm.toString(i)));
@@ -107,8 +115,6 @@ contract ProposeAddVerifierTest is Test {
 
         vm.etch(target, safe.code);
         vm.copyStorage(safe, target);
-
-        firstOwner = owners[0];
     }
 
     /// @notice Installs a router of the admin at the target address.

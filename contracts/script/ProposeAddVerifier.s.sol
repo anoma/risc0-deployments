@@ -12,17 +12,19 @@ import {Safe} from "safe-utils-0.0.24/src/Safe.sol";
 
 import {RiscZeroVerifierSelectors} from "../src/RiscZeroVerifierSelectors.sol";
 import {SupportedNetworks} from "../src/SupportedNetworks.sol";
+import {Parameters} from "./Parameters.sol";
 
 /// @notice Checks the emergency stop of a Groth16 verifier and proposes to the PA Safe the `addVerifier` call that adds
 /// it to the router of the current chain. The signers of the PA Safe confirm and execute the call in the Safe app.
 contract ProposeAddVerifier is Script, SupportedNetworks {
     using Safe for *;
 
-    /// @notice The Safe of the protocol adapters, which must own the router and guard the emergency stop.
-    address public constant PA_SAFE = 0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10;
-
     /// @notice The client of the Safe Transaction Service for the PA Safe.
     Safe.Client internal _safe;
+
+    /// @notice Thrown if Anoma did not deploy the router of the current chain.
+    /// @param chainId The chain ID of the current chain.
+    error RouterNotAnomaDeployed(uint256 chainId);
 
     /// @notice Thrown if the PA Safe does not own the router.
     /// @param routerOwner The owner of the router.
@@ -41,41 +43,45 @@ contract ProposeAddVerifier is Script, SupportedNetworks {
     /// @notice Thrown if the simulated execution of the call by the PA Safe fails.
     error TransactionSimulationFailed();
 
-    /// @notice Checks the emergency stop and proposes its `addVerifier` call to the PA Safe through the Safe
-    /// Transaction Service, at the current nonce of the PA Safe.
+    /// @notice Checks the emergency stop and proposes its `addVerifier` call from the deployment wallet to the PA Safe
+    /// through the Safe Transaction Service, at the current nonce of the PA Safe.
     /// @param emergencyStop The emergency stop of the Groth16 verifier to add.
-    /// @param proposer The signer or delegate of the PA Safe that proposes the call.
     /// @dev Without `--broadcast`, the script simulates the execution of the call by the PA Safe instead.
-    function run(RiscZeroVerifierEmergencyStop emergencyStop, address proposer) public {
-        RiscZeroVerifierRouter router = getRouterData().router;
-        check({router: router, emergencyStop: emergencyStop});
+    function run(RiscZeroVerifierEmergencyStop emergencyStop) public {
+        RiscZeroVerifierRouter router = check({emergencyStop: emergencyStop});
 
         bytes memory callData = abi.encodeCall(
             RiscZeroVerifierRouter.addVerifier, (RiscZeroVerifierSelectors._GROTH16_VERIFIER_SELECTOR, emergencyStop)
         );
 
-        _safe.initialize(PA_SAFE);
+        _safe.initialize(Parameters.PA_SAFE);
 
         if (Safe.isBroadcastMode()) {
-            _safe.proposeTransaction(address(router), callData, proposer);
+            _safe.proposeTransaction(address(router), callData, Parameters.DEPLOYMENT_WALLET);
         } else {
             require(
-                _safe.simulateTransactionMultiSigNoSign(address(router), callData, IOwnerManager(PA_SAFE).getOwners()),
+                _safe.simulateTransactionMultiSigNoSign(
+                    address(router), callData, IOwnerManager(Parameters.PA_SAFE).getOwners()
+                ),
                 TransactionSimulationFailed()
             );
         }
     }
 
-    /// @notice Reverts unless the PA Safe owns the router and guards the emergency stop, and the verifier behind the
-    /// emergency stop has the Groth16 selector of `RiscZeroVerifierSelectors`.
-    /// @param router The router to add the verifier to.
+    /// @notice Reverts unless Anoma deployed the router of the current chain, the PA Safe owns this router and guards the
+    /// emergency stop, and the verifier behind the emergency stop has the Groth16 selector of `RiscZeroVerifierSelectors`.
     /// @param emergencyStop The emergency stop of the verifier.
-    function check(RiscZeroVerifierRouter router, RiscZeroVerifierEmergencyStop emergencyStop) public view {
+    /// @return router The router of the current chain, from `SupportedNetworks`.
+    function check(RiscZeroVerifierEmergencyStop emergencyStop) public view returns (RiscZeroVerifierRouter router) {
+        Data memory routerData = getRouterData();
+        require(routerData.isAnomaDeployed, RouterNotAnomaDeployed({chainId: block.chainid}));
+        router = routerData.router;
+
         address routerOwner = router.owner();
-        require(routerOwner == PA_SAFE, RouterOwnerNotPaSafe(routerOwner));
+        require(routerOwner == Parameters.PA_SAFE, RouterOwnerNotPaSafe(routerOwner));
 
         address guardian = emergencyStop.owner();
-        require(guardian == PA_SAFE, GuardianNotPaSafe(guardian));
+        require(guardian == Parameters.PA_SAFE, GuardianNotPaSafe(guardian));
 
         bytes4 selector = IRiscZeroSelectable(address(emergencyStop.verifier())).SELECTOR();
         require(

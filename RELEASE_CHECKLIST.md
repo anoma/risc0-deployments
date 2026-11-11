@@ -185,20 +185,20 @@ For each chain, do the following:
 - [ ] **Simulate** the proposal by running
 
   ```sh
-  just contracts-simulate-add-verifier-proposal $ESTOP <PROPOSER_ADDRESS> <CHAIN_NAME>
+  just contracts-simulate-add-verifier-proposal $ESTOP <CHAIN_NAME>
   ```
 
-  The script checks that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. Then it simulates the PA Safe executing the `addVerifier(<SELECTOR>, $ESTOP)` call at its current nonce, and prints this nonce.
+  The script reads the router of the chain from `SupportedNetworks.sol`. It checks that Anoma deployed the router (`isAnomaDeployed`), that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. Then it simulates the PA Safe executing the `addVerifier(<SELECTOR>, $ESTOP)` call at its current nonce, and prints this nonce.
 
 - [ ] Check in the Safe app that no queued transaction of the PA Safe on the chain has this nonce. The script proposes at the current nonce, so a queued transaction with this nonce conflicts with the proposal, and the signers can execute only one of them.
 
 - [ ] After a successful simulation, **propose** the call to the PA Safe by running
 
   ```sh
-  just contracts-propose-add-verifier deployer $ESTOP <PROPOSER_ADDRESS> <CHAIN_NAME>
+  just contracts-propose-add-verifier deployer $ESTOP <CHAIN_NAME>
   ```
 
-  `<PROPOSER_ADDRESS>` is the address of the `deployer` account, which must be a signer or a delegate of the PA Safe. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
+  `deployer` must be the account of the deployment wallet in [`Parameters.sol`](./contracts/script/Parameters.sol), which proposes the call. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
 
 - [ ] On BSC testnet, the script reverts with `RouterOwnerNotPaSafe`. There, the router owner sends the call
 
