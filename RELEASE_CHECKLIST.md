@@ -73,7 +73,7 @@ and for the **bindings** package:
 
 - [ ] Run `just contracts-build`
 
-- [ ] Run the test suite with `just contracts-test`. The tests fork every supported network to check its router and Groth16 verifier, so CI does not run them.
+- [ ] Run the test suite with `just contracts-test`.
 
 ### 3. Deploy and Verify the RISC Zero Contracts
 
@@ -160,7 +160,7 @@ The PA Safe `0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10` owns these routers and 
 
 ### 1. Prerequisites
 
-- [ ] Move to the new `risc0-ethereum` version in `contracts/foundry.toml`, and set the new selector in [`RiscZeroVerifierSelectors.sol`](./contracts/src/RiscZeroVerifierSelectors.sol). `just contracts-test` checks that the selector matches the verifier.
+- [ ] Move to the new `risc0-ethereum` version in `contracts/foundry.toml`, set the new selector in [`RiscZeroVerifierSelectors.sol`](./contracts/src/RiscZeroVerifierSelectors.sol), and import the test receipt of the new version in [`SupportedNetworks.t.sol`](./contracts/test/SupportedNetworks.t.sol). `just contracts-test` checks that the selector matches the verifier and the test receipt.
 
 - [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN` and `GUARDIAN`. Import the deployment wallet of [`Parameters.sol`](./contracts/script/Parameters.sol) as `deployer`: the deploy script deploys from it and makes the PA Safe the guardian.
 
@@ -229,7 +229,7 @@ For each chain, do the following:
   cast call $ROUTER "getVerifier(bytes4)(address)" <SELECTOR> --rpc-url <CHAIN_NAME>
   ```
 
-- [ ] Run `just contracts-test`. It forks all supported networks except Monad and Monad testnet, so check those two with the `cast call` above.
+- [ ] Run `just contracts-test`. It checks that the router of every supported network verifies the test receipt of the new version. On the routers that Anoma deployed, it also checks that the guardian owns the new emergency stop.
 
 ### 4. Stop the Previous Verifier
 
