@@ -81,12 +81,6 @@ contract SupportedNetworks {
         });
 
         _supportNetwork({
-            name: "bsc-testnet",
-            chainId: 97,
-            riscZeroVerifierRouter: 0x7C1B7b8fEB636eA9Ecd32152Bce2744a0EEf39C7,
-            isAnomaDeployed: true
-        });
-        _supportNetwork({
             name: "bsc",
             chainId: 56,
             riscZeroVerifierRouter: 0x7C1B7b8fEB636eA9Ecd32152Bce2744a0EEf39C7,
@@ -112,7 +106,6 @@ contract SupportedNetworks {
             riscZeroVerifierRouter: 0x8cFdF6D8D1b141897D542aa07Afd27e37694dF7f,
             isAnomaDeployed: true
         });
-
         _supportNetwork({
             name: "monad",
             chainId: 143,

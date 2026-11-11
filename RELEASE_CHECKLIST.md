@@ -148,13 +148,13 @@ For each chain, you want to deploy to, do the following:
 
 When `risc0-ethereum` releases a Groth16 verifier with a new selector, add it to each router that [`SupportedNetworks.sol`](./contracts/src/SupportedNetworks.sol) marks with `isAnomaDeployed`. RISC Zero adds it to its own routers.
 
-The PA Safe `0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10` owns these routers and guards their emergency stops. BSC testnet is the exception: the PA Safe does not exist there.
+The PA Safe `0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10` owns these routers and guards their emergency stops.
 
 ### 1. Prerequisites
 
 - [ ] Move to the new `risc0-ethereum` version in `contracts/foundry.toml`, and set the new selector in [`RiscZeroVerifierSelectors.sol`](./contracts/src/RiscZeroVerifierSelectors.sol). `just contracts-test` checks that the selector matches the verifier.
 
-- [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN`. The guardian is the PA Safe. On BSC testnet, it is the guardian of the previous emergency stop.
+- [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN`. The guardian is the PA Safe.
 
 ### 2. Deploy and Verify the Verifier
 
@@ -199,12 +199,6 @@ For each chain, do the following:
   ```
 
   `<PROPOSER_ADDRESS>` is the address of the `deployer` account, which must be a signer or a delegate of the PA Safe. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
-
-- [ ] On BSC testnet, the script reverts with `RouterOwnerNotPaSafe`. There, the router owner sends the call
-
-  ```sh
-  cast send $ROUTER "addVerifier(bytes4,address)" <SELECTOR> $ESTOP --rpc-url bsc-testnet --account <ROUTER_OWNER_ACCOUNT>
-  ```
 
 - [ ] Check that the router returns the new emergency stop
 
