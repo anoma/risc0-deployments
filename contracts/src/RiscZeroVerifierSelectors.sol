@@ -7,5 +7,5 @@ pragma solidity ^0.8.23;
 /// @custom:security-contact security@anoma.foundation
 library RiscZeroVerifierSelectors {
     /// @notice The Groth16 RISC Zero verifier selector.
-    bytes4 internal constant _GROTH16_VERIFIER_SELECTOR = 0x73c457ba;
+    bytes4 internal constant _GROTH16_VERIFIER_SELECTOR = 0xe71e6620;
 }

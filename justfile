@@ -109,39 +109,39 @@ contracts-propose-add-verifier deployer estop proposer chain *args:
 contracts-verify-sourcify groth16 estop router chain *args:
     cd contracts && env -u ETHERSCAN_API_KEY \
     forge verify-contract {{groth16}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier sourcify --watch {{ args }}
     cd contracts && env -u ETHERSCAN_API_KEY \
     forge verify-contract {{estop}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
         --chain {{chain}} --verifier sourcify  --watch {{ args }}
     cd contracts && env -u ETHERSCAN_API_KEY \
     forge verify-contract {{router}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
         --chain {{chain}} --verifier sourcify --watch {{ args }}
 
 # Verify on etherscan
 contracts-verify-etherscan groth16 estop router chain *args:
     cd contracts && forge verify-contract {{groth16}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier etherscan --watch  {{ args }}
     cd contracts && forge verify-contract {{estop}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
         --chain {{chain}} --verifier etherscan  --watch {{ args }}
     cd contracts && forge verify-contract {{router}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
         --chain {{chain}} --verifier etherscan --watch {{ args }}
 
 # Verify on custom explorer
 contracts-verify-custom groth16 estop router chain verifier-url *args:
     cd contracts && forge verify-contract {{groth16}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
         --chain {{chain}} --verifier-url {{verifier-url}} --watch  {{ args }}
     cd contracts && forge verify-contract {{estop}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
         --chain {{chain}} --verifier-url {{verifier-url}}  --watch {{ args }}
     cd contracts && forge verify-contract {{router}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
+        dependencies/risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
         --chain {{chain}} --verifier-url {{verifier-url}} --watch {{ args }}
 
 # Verify on both sourcify and etherscan

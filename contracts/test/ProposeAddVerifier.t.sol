@@ -4,9 +4,9 @@ pragma solidity ^0.8.23;
 import {Test} from "forge-std-1.17.0/src/Test.sol";
 import {
     RiscZeroVerifierEmergencyStop
-} from "risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol";
-import {RiscZeroVerifierRouter} from "risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol";
-import {RiscZeroMockVerifier} from "risc0-risc0-ethereum-3.0.1/contracts/src/test/RiscZeroMockVerifier.sol";
+} from "risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierEmergencyStop.sol";
+import {RiscZeroVerifierRouter} from "risc0-risc0-ethereum-3.1.0/contracts/src/RiscZeroVerifierRouter.sol";
+import {RiscZeroMockVerifier} from "risc0-risc0-ethereum-3.1.0/contracts/src/test/RiscZeroMockVerifier.sol";
 import {SafeProxy} from "safe-smart-account-1.5.0/contracts/proxies/SafeProxy.sol";
 import {SafeL2} from "safe-smart-account-1.5.0/contracts/SafeL2.sol";
 
