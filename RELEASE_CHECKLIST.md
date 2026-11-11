@@ -99,26 +99,27 @@ For each chain, you want to deploy to, do the following:
   export ROUTER=<ROUTER_CONTRACT_ADDRESS>
   ```
 
-- [ ] Verify the contract on
-  - [ ] sourcify
+- [ ] Right after the deployment, verify the three contracts on Sourcify and Etherscan. Etherscan copies a verification to each contract with the same code, and its API cannot replace a copied entry.
 
-    ```sh
-    just contracts-verify-sourcify $GROTH16 $ESTOP $ROUTER <CHAIN>
-    ```
+  ```sh
+  just contracts-verify-deployment $GROTH16 $ESTOP $ROUTER <CHAIN_NAME>
+  ```
 
-  - [ ] Etherscan
+  On a chain that Etherscan does not serve, such as Tempo, verify each contract on Sourcify alone, for example the Groth16 verifier with
 
-    ```sh
-    just contracts-verify-etherscan $GROTH16 $ESTOP $ROUTER <CHAIN>
-    ```
+  ```sh
+  just contracts-verify-sourcify $GROTH16 "$(just --evaluate groth16_verifier_contract)" <CHAIN_NAME>
+  ```
 
-  - [ ] custom explorers
+  and the other two with `emergency_stop_contract` and `router_contract`. `just contracts-verify-custom <ADDRESS> <CONTRACT> <CHAIN_NAME> <VERIFIER_URL>` verifies a contract on another explorer.
 
-    ```sh
-        just contracts-verify-custom $GROTH16 $ESTOP $ROUTER <VERIFIER_URL> <CHAIN>
-    ```
+  With the free Etherscan key, Etherscan refuses to look up the creation transaction on some chains, such as BSC. There, give the constructor arguments as hex without `0x`, for example for the emergency stop:
 
-    and check that the verification worked (e.g., on https://sourcify.dev/#/lookup).
+  ```sh
+  just contracts-verify-etherscan $ESTOP "$(just --evaluate emergency_stop_contract)" <CHAIN_NAME> --constructor-args $(cast abi-encode "constructor(address,address)" $GROTH16 $GUARDIAN | cut -c3-)
+  ```
+
+- [ ] Check the verification on https://sourcify.dev/#/lookup and on the explorer of the chain.
 
 ### 4. Ensure the Admin has Accepted the Ownership Transfer
 
@@ -180,7 +181,20 @@ For each chain, do the following:
 
   If `deployer` is not the deployment wallet, forge stops before it sends a transaction.
 
-- [ ] Export `GROTH16` and `ESTOP`, and verify the contracts as in [Deploy and Verify the RISC Zero Contracts](#3-deploy-and-verify-the-risc-zero-contracts).
+- [ ] Export the addresses of the new contracts
+
+  ```sh
+  export GROTH16=<GROTH16_VERIFIER_CONTRACT_ADDRESS>
+  export ESTOP=<EMERGENCY_STOP_CONTRACT_ADDRESS>
+  ```
+
+- [ ] Right after the deployment, verify both contracts on Sourcify and Etherscan. The router exists already, so this step does not verify it.
+
+  ```sh
+  just contracts-verify-verifier $GROTH16 $ESTOP <CHAIN_NAME>
+  ```
+
+  On a chain that Etherscan does not serve, verify each contract on Sourcify alone, as in [Deploy and Verify the RISC Zero Contracts](#3-deploy-and-verify-the-risc-zero-contracts).
 
 ### 3. Add the Verifier to the Router
 
