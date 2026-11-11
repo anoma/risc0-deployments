@@ -68,7 +68,7 @@ contract SupportedNetworksTest is SupportedNetworks, Test {
 
     function fixtureAnomaNetwork() public pure returns (AnomaNetwork[] memory anomaNetwork) {
         anomaNetwork = new AnomaNetwork[](8);
-        anomaNetwork[0] = AnomaNetwork({name: "bsc-testnet", guardian: Parameters.BSC_TESTNET_GUARDIAN});
+        anomaNetwork[0] = AnomaNetwork({name: "bsc-testnet", guardian: Parameters.DEPLOYMENT_WALLET});
         anomaNetwork[1] = AnomaNetwork({name: "bsc", guardian: Parameters.PA_MULTISIG});
         anomaNetwork[2] = AnomaNetwork({name: "tempo-moderato", guardian: Parameters.PA_MULTISIG});
         anomaNetwork[3] = AnomaNetwork({name: "tempo", guardian: Parameters.PA_MULTISIG});

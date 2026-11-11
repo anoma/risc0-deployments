@@ -21,11 +21,21 @@ contract DeployRiscZeroVerifierTest is Test {
         assertEq(emergencyStop.owner(), Parameters.PA_MULTISIG);
     }
 
-    function test_DeployRiscZeroVerifier_uses_the_bsc_testnet_guardian_on_bsc_testnet() public {
+    function test_DeployRiscZeroVerifier_makes_the_deployment_wallet_the_guardian_on_bsc_testnet() public {
         vm.chainId(Parameters.BSC_TESTNET_CHAIN_ID);
 
         (RiscZeroVerifierEmergencyStop emergencyStop,) = new DeployRiscZeroVerifier().run();
 
-        assertEq(emergencyStop.owner(), Parameters.BSC_TESTNET_GUARDIAN);
+        assertEq(emergencyStop.owner(), Parameters.DEPLOYMENT_WALLET);
+    }
+
+    function test_DeployRiscZeroVerifier_deploys_from_the_deployment_wallet() public {
+        uint64 nonce = vm.getNonce(Parameters.DEPLOYMENT_WALLET);
+
+        (RiscZeroVerifierEmergencyStop emergencyStop, RiscZeroGroth16Verifier groth16Verifier) =
+            new DeployRiscZeroVerifier().run();
+
+        assertEq(address(groth16Verifier), vm.computeCreateAddress(Parameters.DEPLOYMENT_WALLET, nonce));
+        assertEq(address(emergencyStop), vm.computeCreateAddress(Parameters.DEPLOYMENT_WALLET, nonce + 1));
     }
 }
