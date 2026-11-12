@@ -277,7 +277,7 @@ For each chain, do the following:
 
 ### 4. Publish a new `bindings` package
 
-- [ ] Publish the `anoma-risc0-deployments-bindings` package on https://crates.io/ with
+- [ ] Publish the `anoma-risc0-verifier-bindings` package on https://crates.io/ with
 
   ```sh
   just bindings-publish --dry-run
