@@ -72,47 +72,88 @@ contracts-deploy deployer admin guardian chain *args:
         --sig "run(address,address)" {{admin}} {{guardian}} \
         --broadcast --rpc-url {{chain}} --account {{deployer}} --sender $(cast wallet address --account {{deployer}}) {{ args }}
 
-# Verify RISC Zero contracts on Sourcify
-contracts-verify-sourcify groth16 estop router chain *args:
-    cd contracts && env -u ETHERSCAN_API_KEY \
-    forge verify-contract {{groth16}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
-        --chain {{chain}} --verifier sourcify --watch {{ args }}
-    cd contracts && env -u ETHERSCAN_API_KEY \
-    forge verify-contract {{estop}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
-        --chain {{chain}} --verifier sourcify  --watch {{ args }}
-    cd contracts && env -u ETHERSCAN_API_KEY \
-    forge verify-contract {{router}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
-        --chain {{chain}} --verifier sourcify --watch {{ args }}
+# Simulate the deployment of a verifier for an existing router (dry-run)
+contracts-simulate-verifier chain *args:
+    @echo "Cleaning contracts to ensure reproducible build..."
+    @just contracts-clean
+    cd contracts && forge script \
+        script/DeployRiscZeroVerifier.s.sol:DeployRiscZeroVerifier \
+        --rpc-url {{chain}} {{ args }}
 
-# Verify on etherscan
-contracts-verify-etherscan groth16 estop router chain *args:
-    cd contracts && forge verify-contract {{groth16}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
-        --chain {{chain}} --verifier etherscan --watch  {{ args }}
-    cd contracts && forge verify-contract {{estop}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
-        --chain {{chain}} --verifier etherscan  --watch {{ args }}
-    cd contracts && forge verify-contract {{router}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
-        --chain {{chain}} --verifier etherscan --watch {{ args }}
+# Deploy a verifier and its emergency stop for an existing router (groth16 + emergency stop). `deployer` is the account
+# of the deployment wallet in `contracts/script/Parameters.sol`, which the script deploys from.
+contracts-deploy-verifier deployer chain *args:
+    @echo "Cleaning contracts to ensure reproducible build..."
+    @just contracts-clean
+    cd contracts && forge script \
+        script/DeployRiscZeroVerifier.s.sol:DeployRiscZeroVerifier \
+        --broadcast --rpc-url {{chain}} --account {{deployer}} {{ args }}
 
-# Verify on custom explorer
-contracts-verify-custom groth16 estop router chain verifier-url *args:
-    cd contracts && forge verify-contract {{groth16}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier \
-        --chain {{chain}} --verifier-url {{verifier-url}} --watch  {{ args }}
-    cd contracts && forge verify-contract {{estop}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop \
-        --chain {{chain}} --verifier-url {{verifier-url}}  --watch {{ args }}
-    cd contracts && forge verify-contract {{router}} \
-        dependencies/risc0-risc0-ethereum-3.0.1/contracts/src/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter \
-        --chain {{chain}} --verifier-url {{verifier-url}} --watch {{ args }}
+# Simulate the `addVerifier` proposal (dry-run): checks the emergency stop and simulates the PA Safe executing the call
+contracts-simulate-add-verifier-proposal estop chain *args:
+    cd contracts && forge script \
+        script/ProposeAddVerifier.s.sol:ProposeAddVerifier \
+        --sig "run(address)" {{estop}} \
+        --rpc-url {{chain}} {{ args }}
 
-# Verify on both sourcify and etherscan
-contracts-verify groth16 estop router chain: (contracts-verify-sourcify groth16 estop router chain) (contracts-verify-etherscan groth16 estop router chain)
+# Propose adding the verifier behind an emergency stop to the router to the PA Safe. `deployer` is the account of the
+# deployment wallet in `contracts/script/Parameters.sol`, which proposes the call.
+# The Safe Transaction Service request runs through `curl`, so the recipe needs `--ffi`.
+contracts-propose-add-verifier deployer estop chain *args:
+    cd contracts && forge script \
+        script/ProposeAddVerifier.s.sol:ProposeAddVerifier \
+        --sig "run(address)" {{estop}} \
+        --broadcast --ffi --rpc-url {{chain}} --account {{deployer}} {{ args }}
+
+# The RISC Zero contracts, by their path in the risc0-ethereum dependency
+risc0_ethereum_src := "dependencies/risc0-risc0-ethereum-3.1.0/contracts/src"
+groth16_verifier_contract := risc0_ethereum_src + "/groth16/RiscZeroGroth16Verifier.sol:RiscZeroGroth16Verifier"
+emergency_stop_contract := risc0_ethereum_src + "/RiscZeroVerifierEmergencyStop.sol:RiscZeroVerifierEmergencyStop"
+router_contract := risc0_ethereum_src + "/RiscZeroVerifierRouter.sol:RiscZeroVerifierRouter"
+
+# Verify a contract on Sourcify. `chain` is an RPC endpoint of `contracts/foundry.toml`, which gives the chain ID.
+contracts-verify-sourcify address contract chain *args:
+    cd contracts && env -u ETHERSCAN_API_KEY forge verify-contract {{address}} {{contract}} \
+        --rpc-url {{chain}} --verifier sourcify --watch {{ args }}
+
+# Verify a contract on Etherscan. Without `--constructor-args <hex>` in `args`, forge reads the constructor arguments from
+# the creation transaction, which the free Etherscan API does not serve on BSC.
+contracts-verify-etherscan address contract chain *args:
+    cd contracts && forge verify-contract {{address}} {{contract}} \
+        --rpc-url {{chain}} --verifier etherscan --watch --skip-is-verified-check \
+        {{ if args =~ '--constructor-args' { '' } else { '--guess-constructor-args' } }} {{ args }}
+
+# Verify a contract on a custom explorer
+contracts-verify-custom address contract chain verifier-url *args:
+    cd contracts && forge verify-contract {{address}} {{contract}} \
+        --rpc-url {{chain}} --verifier-url {{verifier-url}} --watch {{ args }}
+
+# Verify a contract on Sourcify and Etherscan
+contracts-verify address contract chain: (contracts-verify-sourcify address contract chain) (contracts-verify-etherscan address contract chain)
+
+# Verify a Groth16 verifier and its emergency stop of `DeployRiscZeroVerifier` on Sourcify, then on Etherscan with the
+# constructor arguments of the script
+contracts-verify-verifier groth16 estop chain: \
+    (contracts-verify-sourcify groth16 groth16_verifier_contract chain) \
+    (contracts-verify-sourcify estop emergency_stop_contract chain)
+    #!/usr/bin/env bash
+    set -euo pipefail
+    control_id=contracts/{{risc0_ethereum_src}}/groth16/ControlID.sol
+    groth16_args=$(sed -n -E 's/.*CONTROL_ROOT = hex"([0-9a-f]{64})";/\1/p' $control_id)$(sed -n -E 's/.*BN254_CONTROL_ID = hex"([0-9a-f]{64})";/\1/p' $control_id)
+    guardian=$(sed -n -E 's/.*PA_MULTISIG = (0x[0-9a-fA-F]{40});/\1/p' contracts/script/Parameters.sol)
+    [ ${#groth16_args} -eq 128 ] && [ -n "$guardian" ] || { echo "Cannot read the constructor arguments of the script." >&2; exit 1; }
+    just contracts-verify-etherscan {{groth16}} {{groth16_verifier_contract}} {{chain}} --constructor-args $groth16_args
+    just contracts-verify-etherscan {{estop}} {{emergency_stop_contract}} {{chain}} \
+        --constructor-args $(cast abi-encode "constructor(address,address)" {{groth16}} $guardian | cut -c3-)
+
+# Verify the Groth16 verifier, the emergency stop and the router of a deployment on Sourcify, then on Etherscan
+contracts-verify-deployment groth16 estop router chain: \
+    (contracts-verify-sourcify groth16 groth16_verifier_contract chain) \
+    (contracts-verify-sourcify estop emergency_stop_contract chain) \
+    (contracts-verify-sourcify router router_contract chain) \
+    (contracts-verify-etherscan groth16 groth16_verifier_contract chain) \
+    (contracts-verify-etherscan estop emergency_stop_contract chain) \
+    (contracts-verify-etherscan router router_contract chain)
 
 # Publish contracts to soldeer. VERSION must be semver (e.g. 1.2.0).
 # Flags such as --dry-run go AFTER the version: `just contracts-publish 1.2.0 --dry-run`.

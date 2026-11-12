@@ -73,7 +73,7 @@ and for the **bindings** package:
 
 - [ ] Run `just contracts-build`
 
-- [ ] Run the test suite with `just contracts-test`. The tests fork every supported network to check its router and Groth16 verifier, so CI does not run them.
+- [ ] Run the test suite with `just contracts-test`.
 
 ### 3. Deploy and Verify the RISC Zero Contracts
 
@@ -99,26 +99,34 @@ For each chain, you want to deploy to, do the following:
   export ROUTER=<ROUTER_CONTRACT_ADDRESS>
   ```
 
-- [ ] Verify the contract on
-  - [ ] sourcify
+- [ ] Right after the deployment, verify the three contracts on Sourcify and Etherscan. Etherscan copies a verification to each contract with the same code, and its API cannot replace a copied entry.
 
-    ```sh
-    just contracts-verify-sourcify $GROTH16 $ESTOP $ROUTER <CHAIN>
-    ```
+  ```sh
+  just contracts-verify-deployment $GROTH16 $ESTOP $ROUTER <CHAIN_NAME>
+  ```
 
-  - [ ] Etherscan
+  On a chain that Etherscan does not serve, such as Tempo, verify each contract on Sourcify alone, for example the Groth16 verifier with
 
-    ```sh
-    just contracts-verify-etherscan $GROTH16 $ESTOP $ROUTER <CHAIN>
-    ```
+  ```sh
+  just contracts-verify-sourcify $GROTH16 "$(just --evaluate groth16_verifier_contract)" <CHAIN_NAME>
+  ```
 
-  - [ ] custom explorers
+  and the other two with `emergency_stop_contract` and `router_contract`. `just contracts-verify-custom <ADDRESS> <CONTRACT> <CHAIN_NAME> <VERIFIER_URL>` verifies a contract on another explorer.
 
-    ```sh
-        just contracts-verify-custom $GROTH16 $ESTOP $ROUTER <VERIFIER_URL> <CHAIN>
-    ```
+  On Tempo and Tempo Moderato, forge sends the Sourcify verification to the Sourcify server of Tempo, `https://contracts.tempo.xyz`, and sourcify.dev gets no copy. So verify each contract on sourcify.dev too, with the hash of its creation transaction from the broadcast file of the deployment. Without the hash, sourcify.dev searches for the creation transaction itself. This search fails if the same block holds a Tempo transaction of type `0x76`, and sourcify.dev then matches only the runtime bytecode. For example, for the Groth16 verifier:
 
-    and check that the verification worked (e.g., on https://sourcify.dev/#/lookup).
+  ```sh
+  TX_HASH=$(jq -r --arg address $GROTH16 '.transactions[] | select((.contractAddress | ascii_downcase) == ($address | ascii_downcase)) | .hash' contracts/broadcast/*/<CHAIN_ID>/run-latest.json)
+  just contracts-verify-sourcify $GROTH16 "$(just --evaluate groth16_verifier_contract)" <CHAIN_NAME> --verifier-url https://sourcify.dev/server/ --creation-transaction-hash $TX_HASH
+  ```
+
+  With the free Etherscan key, Etherscan refuses to look up the creation transaction on some chains, such as BSC. There, give the constructor arguments as hex without `0x`, for example for the emergency stop:
+
+  ```sh
+  just contracts-verify-etherscan $ESTOP "$(just --evaluate emergency_stop_contract)" <CHAIN_NAME> --constructor-args $(cast abi-encode "constructor(address,address)" $GROTH16 $GUARDIAN | cut -c3-)
+  ```
+
+- [ ] Check the verification on https://sourcify.dev/#/lookup and on the explorer of the chain.
 
 ### 4. Ensure the Admin has Accepted the Ownership Transfer
 
@@ -143,6 +151,97 @@ For each chain, you want to deploy to, do the following:
   ```
 
   and check the resulting `.zip` file. If everything is correct, remove the `--dry-run` flag and publish the package.
+
+## Adding a Verifier to a Router
+
+When `risc0-ethereum` releases a Groth16 verifier with a new selector, add it to each router that [`SupportedNetworks.sol`](./contracts/src/SupportedNetworks.sol) marks with `isAnomaDeployed`. RISC Zero adds it to its own routers.
+
+The PA Safe `0xE9082Ac8Aa2Fb27DEfDBAC604921C196b884Da10` owns these routers and guards their emergency stops.
+
+### 1. Prerequisites
+
+- [ ] Move to the new `risc0-ethereum` version in `contracts/foundry.toml`, set the new selector in [`RiscZeroVerifierSelectors.sol`](./contracts/src/RiscZeroVerifierSelectors.sol), and import the test receipt of the new version in [`SupportedNetworks.t.sol`](./contracts/test/SupportedNetworks.t.sol). `just contracts-test` checks that the selector matches the verifier and the test receipt.
+
+- [ ] Do the steps of the [prerequisites](#1-prerequisites) for a deployment, except for `ADMIN` and `GUARDIAN`. Import the deployment wallet of [`Parameters.sol`](./contracts/script/Parameters.sol) as `deployer`: the deploy script deploys from it and makes the PA Safe the guardian.
+
+### 2. Deploy and Verify the Verifier
+
+For each chain, do the following:
+
+- [ ] Export the router of the chain from `SupportedNetworks.sol`
+
+  ```sh
+  export ROUTER=<ROUTER_CONTRACT_ADDRESS>
+  ```
+
+- [ ] **Simulate** the deployment by running
+
+  ```sh
+  just contracts-simulate-verifier <CHAIN_NAME>
+  ```
+
+- [ ] After a successful simulation, **deploy** the verifier and its emergency stop by running
+
+  ```sh
+  just contracts-deploy-verifier deployer <CHAIN_NAME>
+  ```
+
+  If `deployer` is not the deployment wallet, forge stops before it sends a transaction.
+
+- [ ] Export the addresses of the new contracts
+
+  ```sh
+  export GROTH16=<GROTH16_VERIFIER_CONTRACT_ADDRESS>
+  export ESTOP=<EMERGENCY_STOP_CONTRACT_ADDRESS>
+  ```
+
+- [ ] Right after the deployment, verify both contracts on Sourcify and Etherscan. The router exists already, so this step does not verify it.
+
+  ```sh
+  just contracts-verify-verifier $GROTH16 $ESTOP <CHAIN_NAME>
+  ```
+
+  On a chain that Etherscan does not serve, verify each contract on Sourcify alone, as in [Deploy and Verify the RISC Zero Contracts](#3-deploy-and-verify-the-risc-zero-contracts).
+
+### 3. Add the Verifier to the Router
+
+- [ ] **Simulate** the proposal by running
+
+  ```sh
+  just contracts-simulate-add-verifier-proposal $ESTOP <CHAIN_NAME>
+  ```
+
+  The script reads the router of the chain from `SupportedNetworks.sol`. It checks that Anoma deployed the router (`isAnomaDeployed`), that the PA Safe owns the router and guards `$ESTOP`, and that the verifier behind `$ESTOP` has the selector of `RiscZeroVerifierSelectors.sol`. Then it simulates the PA Safe executing the `addVerifier(<SELECTOR>, $ESTOP)` call at its current nonce, and prints this nonce.
+
+- [ ] Check in the Safe app that no queued transaction of the PA Safe on the chain has this nonce. The script proposes at the current nonce, so a queued transaction with this nonce conflicts with the proposal, and the signers can execute only one of them.
+
+- [ ] After a successful simulation, **propose** the call to the PA Safe by running
+
+  ```sh
+  just contracts-propose-add-verifier deployer $ESTOP <CHAIN_NAME>
+  ```
+
+  `deployer` must be the account of the deployment wallet in [`Parameters.sol`](./contracts/script/Parameters.sol), which proposes the call. The signers of the PA Safe then confirm and execute the transaction in the Safe app.
+
+- [ ] Check that the router returns the new emergency stop
+
+  ```sh
+  cast call $ROUTER "getVerifier(bytes4)(address)" <SELECTOR> --rpc-url <CHAIN_NAME>
+  ```
+
+- [ ] Run `just contracts-test`. It checks that the router of every supported network verifies the test receipt of the new version. On the routers that Anoma deployed, it also checks that the guardian owns the new emergency stop.
+
+### 4. Stop the Previous Verifier
+
+- [ ] After the protocol adapters of the chain use the new selector, the guardian calls `estop()` on the emergency stop of the previous verifier. Each contract that still uses the previous selector then stops too.
+
+- [ ] Keep the previous selector in the router, and do not call `removeVerifier`. The legacy protocol adapter reads the stop state of its verifier through the router, and this read reverts for a removed selector.
+
+### 5. Release
+
+- [ ] Merge the work, create a GitHub release, and publish the contracts package as in steps 5 and 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts).
+
+- [ ] Release the bindings.
 
 ## Releasing the Bindings
 
@@ -178,7 +277,7 @@ For each chain, you want to deploy to, do the following:
 
 ### 4. Publish a new `bindings` package
 
-- [ ] Publish the `anoma-risc0-deployments-bindings` package on https://crates.io/ with
+- [ ] Publish the `anoma-risc0-verifier-bindings` package on https://crates.io/ with
 
   ```sh
   just bindings-publish --dry-run
