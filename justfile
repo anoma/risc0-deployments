@@ -128,32 +128,49 @@ contracts-verify-custom address contract chain verifier-url *args:
     cd contracts && forge verify-contract {{address}} {{contract}} \
         --rpc-url {{chain}} --verifier-url {{verifier-url}} --watch {{ args }}
 
-# Verify a contract on Sourcify and Etherscan
-contracts-verify address contract chain: (contracts-verify-sourcify address contract chain) (contracts-verify-etherscan address contract chain)
+# Verify a contract on Sourcify and Etherscan; a failure on one explorer does not stop the other
+contracts-verify address contract chain:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    failed=""
+    for explorer in sourcify etherscan; do
+        just contracts-verify-$explorer {{address}} {{contract}} {{chain}} || failed+=" $explorer"
+    done
+    if [ -n "$failed" ]; then echo "Verification of {{address}} failed on:$failed" >&2; exit 1; fi
 
 # Verify a Groth16 verifier and its emergency stop of `DeployRiscZeroVerifier` on Sourcify, then on Etherscan with the
-# constructor arguments of the script
-contracts-verify-verifier groth16 estop chain: \
-    (contracts-verify-sourcify groth16 groth16_verifier_contract chain) \
-    (contracts-verify-sourcify estop emergency_stop_contract chain)
+# constructor arguments of the script; a failed step does not stop the others
+contracts-verify-verifier groth16 estop chain:
     #!/usr/bin/env bash
-    set -euo pipefail
+    set -uo pipefail
+    failed=""
+    just contracts-verify-sourcify {{groth16}} {{groth16_verifier_contract}} {{chain}} || failed+=" sourcify:{{groth16}}"
+    just contracts-verify-sourcify {{estop}} {{emergency_stop_contract}} {{chain}} || failed+=" sourcify:{{estop}}"
     control_id=contracts/{{risc0_ethereum_src}}/groth16/ControlID.sol
     groth16_args=$(sed -n -E 's/.*CONTROL_ROOT = hex"([0-9a-f]{64})";/\1/p' $control_id)$(sed -n -E 's/.*BN254_CONTROL_ID = hex"([0-9a-f]{64})";/\1/p' $control_id)
     guardian=$(sed -n -E 's/.*PA_MULTISIG = (0x[0-9a-fA-F]{40});/\1/p' contracts/script/Parameters.sol)
-    [ ${#groth16_args} -eq 128 ] && [ -n "$guardian" ] || { echo "Cannot read the constructor arguments of the script." >&2; exit 1; }
-    just contracts-verify-etherscan {{groth16}} {{groth16_verifier_contract}} {{chain}} --constructor-args $groth16_args
-    just contracts-verify-etherscan {{estop}} {{emergency_stop_contract}} {{chain}} \
-        --constructor-args $(cast abi-encode "constructor(address,address)" {{groth16}} $guardian | cut -c3-)
+    estop_args=$(cast abi-encode "constructor(address,address)" {{groth16}} $guardian | cut -c3-)
+    if [ ${#groth16_args} -eq 128 ] && [ -n "$guardian" ] && [ ${#estop_args} -eq 128 ]; then
+        just contracts-verify-etherscan {{groth16}} {{groth16_verifier_contract}} {{chain}} --constructor-args $groth16_args || failed+=" etherscan:{{groth16}}"
+        just contracts-verify-etherscan {{estop}} {{emergency_stop_contract}} {{chain}} --constructor-args $estop_args || failed+=" etherscan:{{estop}}"
+    else
+        echo "Cannot read the constructor arguments of the script." >&2
+        failed+=" etherscan:{{groth16}} etherscan:{{estop}}"
+    fi
+    if [ -n "$failed" ]; then echo "Verification failed on:$failed" >&2; exit 1; fi
 
-# Verify the Groth16 verifier, the emergency stop and the router of a deployment on Sourcify, then on Etherscan
-contracts-verify-deployment groth16 estop router chain: \
-    (contracts-verify-sourcify groth16 groth16_verifier_contract chain) \
-    (contracts-verify-sourcify estop emergency_stop_contract chain) \
-    (contracts-verify-sourcify router router_contract chain) \
-    (contracts-verify-etherscan groth16 groth16_verifier_contract chain) \
-    (contracts-verify-etherscan estop emergency_stop_contract chain) \
-    (contracts-verify-etherscan router router_contract chain)
+# Verify the Groth16 verifier, the emergency stop and the router of a deployment on Sourcify, then on Etherscan; a failed
+# step does not stop the others
+contracts-verify-deployment groth16 estop router chain:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    failed=""
+    for explorer in sourcify etherscan; do
+        just contracts-verify-$explorer {{groth16}} {{groth16_verifier_contract}} {{chain}} || failed+=" $explorer:{{groth16}}"
+        just contracts-verify-$explorer {{estop}} {{emergency_stop_contract}} {{chain}} || failed+=" $explorer:{{estop}}"
+        just contracts-verify-$explorer {{router}} {{router_contract}} {{chain}} || failed+=" $explorer:{{router}}"
+    done
+    if [ -n "$failed" ]; then echo "Verification failed on:$failed" >&2; exit 1; fi
 
 # Publish contracts to soldeer. VERSION must be semver (e.g. 1.2.0).
 # Flags such as --dry-run go AFTER the version: `just contracts-publish 1.2.0 --dry-run`.
