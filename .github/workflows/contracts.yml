@@ -6,8 +6,8 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
+# Each job states the permissions that it needs.
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,12 +17,16 @@ jobs:
   tests:
     name: Contracts Tests
     runs-on: macos-latest
+    permissions:
+      contents: read
     env:
       FOUNDRY_PROFILE: ci
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Install just
         uses: taiki-e/install-action@v2
