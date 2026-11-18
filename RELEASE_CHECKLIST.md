@@ -140,9 +140,9 @@ For each chain, you want to deploy to, do the following:
 
 - [ ] Update [`./contracts/src/SupportedNetworks.sol`](./contracts/src/SupportedNetworks.sol).
 
-- [ ] Merge a PR containing the work into main.
+- [ ] Merge a PR containing the work into `next`, then a PR that promotes `next` to `main`.
 
-- [ ] Tag the merge commit `vX.Y.Z`.
+- [ ] Tag the merge commit of the promotion `vX.Y.Z`.
 
 - [ ] Create new [GH release](https://github.com/anoma/risc0-deployments/releases).
 
@@ -259,7 +259,7 @@ For each chain, do the following:
   just bindings-check
   ```
 
-- [ ] Checkout a new git branch branching off from `main`.
+- [ ] Check out a new git branch from `next`.
 
 - [ ] Check that there are no staged or unstaged changes by running `git status`.
 
@@ -277,7 +277,7 @@ For each chain, do the following:
 
 ### 3. Release the Bindings with the Contracts
 
-- [ ] After merging, tag the merge commit `vX.Y.Z`, create a new [GH release](https://github.com/anoma/risc0-deployments/releases), and publish the contracts package as in step 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts). If no contract changed, `X.Y.Z` is the next patch version.
+- [ ] After merging into `next` and promoting `next` to `main`, tag the merge commit of the promotion `vX.Y.Z`, create a new [GH release](https://github.com/anoma/risc0-deployments/releases), and publish the contracts package as in step 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts). If no contract changed, `X.Y.Z` is the next patch version.
 
 ### 4. Publish a new `bindings` package
 
