@@ -2,8 +2,8 @@
 
 Releases of the packages contained in this monorepo follow the [SemVer convention](https://semver.org/spec/v2.0.0.html).
 
-> ![NOTE]
-> The `contracts` (soldeer) and `bindings` (crates.io) packages are independently versioned with `X.Y.Z` and `A.B.C`, respectively.
+> [!NOTE]
+> The `contracts` (soldeer) and `bindings` (crates.io) packages are independently versioned with `X.Y.Z` and `A.B.C`, respectively. A release has one git tag, `vX.Y.Z`, named after the contracts version. The bindings have no tag of their own.
 
 We distinguish between the following release cases for the **contracts** package:
 
@@ -12,6 +12,8 @@ We distinguish between the following release cases for the **contracts** package
 - Adding new RISC Zero contract deployments of the **current** RISC Zero protocol version resulting in a new `vX.Y.0` version.
 
 - Correcting an existing RISC Zero contract of the **current** RISC Zero protocol version resulting in a new `vX.Y.Z` version.
+
+- Releasing the bindings without a contract change resulting in a new `vX.Y.Z` version with the same contract sources.
 
 and for the **bindings** package:
 
@@ -140,6 +142,8 @@ For each chain, you want to deploy to, do the following:
 
 - [ ] Merge a PR containing the work into main.
 
+- [ ] Tag the merge commit `vX.Y.Z`.
+
 - [ ] Create new [GH release](https://github.com/anoma/risc0-deployments/releases).
 
 ### 6. Publish a new Soldeer package
@@ -239,9 +243,11 @@ For each chain, do the following:
 
 ### 5. Release
 
-- [ ] Merge the work, create a GitHub release, and publish the contracts package as in steps 5 and 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts).
+- [ ] Bump the bindings in the same PR, as in step 2 of [Releasing the Bindings](#releasing-the-bindings).
 
-- [ ] Release the bindings.
+- [ ] Merge the work, tag it, create a GitHub release, and publish the contracts package as in steps 5 and 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts).
+
+- [ ] Publish the bindings as in step 4 of [Releasing the Bindings](#releasing-the-bindings).
 
 ## Releasing the Bindings
 
@@ -269,11 +275,9 @@ For each chain, do the following:
 
 - [ ] Run the tests with `just bindings-test`.
 
-### 3. Create a new `bindings` GitHub Release
+### 3. Release the Bindings with the Contracts
 
-- [ ] After merging, create a new `bindings/vA.B.C` tag.
-
-- [ ] Create a new [GH release](https://github.com/anoma/risc0-deployments/releases).
+- [ ] After merging, tag the merge commit `vX.Y.Z`, create a new [GH release](https://github.com/anoma/risc0-deployments/releases), and publish the contracts package as in step 6 of [Deploying RISC Zero contracts](#deploying-risc-zero-contracts). If no contract changed, `X.Y.Z` is the next patch version.
 
 ### 4. Publish a new `bindings` package
 
